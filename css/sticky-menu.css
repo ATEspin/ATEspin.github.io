@@ -44,25 +44,25 @@ html {
 }
 .welcome-section {
     height: 100%;
-    padding-top: 150px;
+    padding-top: 300px;
     text-align: center;
     background: #fff;
 }
 .about-section {
     height: 100%;
-    padding-top: 150px;
+    padding-top: 100px;
     text-align: center;
     background: #fff;
 }
 .whatwedo-section {
     height: 100%;
-    padding-top: 150px;
+    padding-top: 100px;
     text-align: center;
     background: #fff;
 }
 .contact-section {
     height: 100%;
-    padding-top: 150px;
+    padding-top: 100px;
     text-align: center;
     background: #fff;
 }

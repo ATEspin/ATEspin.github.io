@@ -13,13 +13,16 @@
 }
 
 .intro{
+  position: absolute;
   background: lightgrey;
   padding: 1em;
   border: 1px solid grey;
   border-radius: 10px;
-  width: 70%;
-  margin: auto;
+  width: 60%;
   font-size: 20px;
+  left: 50%;
+  top:20%;
+  transform: translate(-50%);
 }
 
 .mainText{
@@ -32,7 +35,7 @@
 }
 
 .footnote{
-  padding: 1em;
+  padding: 2px;
   position:fixed;
   bottom: 5px;
   left: 50%;

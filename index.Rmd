@@ -23,7 +23,7 @@ Home
 
 :::{.intro .justify}
 
-Abel Torres Espin is an assistant adjunct professor at the Brain and Spinal Injury Center, Department of Neurosurgery, at the University of California, San Francisco. 
+Abel Torres Espin is an assistant adjunct professor at the [Brain and Spinal Injury Center (BASIC)](https://brainandspinalinjury.org/), Department of Neurosurgery, at the University of California, San Francisco (UCSF). 
 
 His current research focuses on the intersection between neurotrauma research and data science. He applies, explores and develops data science methods in traumatic injuries affecting the brain and the spinal cord to increase reproducibility, accelerate translation and augment evidence-based medical practice. These methods include machine learning and intelligence analytics, open science, data sharing, data infrastructures, data mining and data visualization, among others.
 

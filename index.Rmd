@@ -2,11 +2,12 @@
 title: "Abel Torres Espin"
 output: 
   flexdashboard::flex_dashboard:
-    theme: 
-      version: 3
+    theme:
+      version: 4
     social: [ "menu" ]
     source_code: embed
     css: webFlex.css
+    vertical_layout: fill
 editor_options: 
   chunk_output_type: console
 ---
@@ -16,6 +17,7 @@ library(flexdashboard)
 library(easyPubMed) #API connection with pubmed
 library(tidyverse) #To facilitate some data wrangling
 library(DT) # for table html formatting
+library(htmltools)
 ```
 
 Home
@@ -111,11 +113,48 @@ for (p in 1:length(paper_list)){
 
 ## Create the dataframe
 pub_df<-do.call(rbind, extract)
+pub_df<-pub_df%>%arrange(Year)
+pub_df$Link<-paste0("https://pubmed.ncbi.nlm.nih.gov/", pub_df$PMID)
 ```
 
-```{r}
-pub_df<-pub_df%>%select(-DOI)
-datatable(pub_df)
+```{r }
+# pub_df<-pub_df%>%select(-DOI)
+# datatable(pub_df)
+
+year_list<-list()
+years<-sort(unique(pub_df$Year), decreasing = T)
+for (i in 1:length(years)){
+  year<-years[i]
+  temp_df<-pub_df[pub_df$Year==year,]
+  ## papers per year
+  temp_tags<-apply(temp_df, 1, function(x){
+              list(
+                tags$h5(
+                (if (!is.na(x[5])) {
+                    tags$a(href = x[6],x[2])
+                }else{
+                    tags$a(x[2])
+                })),
+                tags$p(x[3],x[4])
+              )
+           })
+  
+  year_list[[i]]<-
+    tags$div(class = year,
+          tags$h4(year),
+          tags$hr(),
+          temp_tags,
+          tags$a(href="#top","Back to top"),
+          tags$br()
+      )
+}
+
+x<-tags$div(class="top",
+           year_list)
+
+x
+
+# write.table(htmltools::renderTags(x)$html, file = "test.txt", quote = F, row.names = F)
 ```
 
 Software
@@ -167,7 +206,7 @@ This website
 
 This website has been created in R, using Rmarkdown and the [flexdashboard](https://pkgs.rstudio.com/flexdashboard/) package. It is an attempt to produce a light weight academic webpage. Other options such as [blogdown](https://bookdown.org/yihui/blogdown/) are possible, and I recommend to explore them. After trying with several options, I decided using trying flexdashboard, which its primary use is for fast creation of dashboard in R. I found the multi-page layout and the incorporation of custom CSS code sufficient to produce this page. Some limitations of this light weight site is the difficulty to incorporate more dynamic content such as a blog.
 
-**Publications as a table**: the publication section is presented as a table rather than the usual list. Using the [DT](https://rstudio.github.io/DT/) R package, and R interface to the JavaScript library DataTables, allows for extended functionalities such as search, sorting and pagination without having to add those externally, thus utilizing the html interactive capabilities. The table is automatically populated every knitting by querying PubMed using the [easyPubMed](https://cran.r-project.org/web/packages/easyPubMed/index.html) R package interfacing with PubMed API. You can see the source code using the navigation var (top right corner) or in [GitHub](https://github.com/ATEspin/ATEspin.github.io).
+**Automatic publications**: the publication section is is automatically populated every knitting by querying PubMed using the [easyPubMed](https://cran.r-project.org/web/packages/easyPubMed/index.html) R package interfacing with PubMed API. You can see the source code using the navigation var (top right corner) or in [GitHub](https://github.com/ATEspin/ATEspin.github.io).
 
 This makes very easy to update the page by updating the Rmarkdown, knitting and pushing to GitHub.
 

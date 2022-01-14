@@ -1,7 +1,0 @@
----
-title: "Blog"
-site: distill::distill_website
-description: |
-  Ideas, thoughts and more...
-listing: posts
----

@@ -1,0 +1,32 @@
+name: "distill_blog"
+title: "Abel Torres Espín"
+description: |
+  My Blog
+output_dir: "_site"
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "Blog"
+      href: blog.html
+    - text: "Research"
+      href: publications.html
+    # - text: "Software"
+    #   href: software.html
+    - text: "About"
+      href: about.html
+    - icon: fab fa-github
+      href: https://github.com/ATEspin
+    - icon: ai ai-google-scholar
+      href: https://scholar.google.com/citations?user=c7vjfOUAAAAJ&hl=en
+output:
+  distill::distill_article:
+    theme: theme.css
+    includes:
+      in_header:
+      - header.html
+base_url: https://atespin.github.io/
+collections:
+  posts:
+    share: [twitter, linkedin]
+    authors_metadata: false

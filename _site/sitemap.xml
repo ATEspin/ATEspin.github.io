@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" version="1.0">
+  <url>
+    <loc>https://atespin.github.io/about.html</loc>
+    <lastmod>2022-01-14T07:06:21-08:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/blog.html</loc>
+    <lastmod>2022-01-14T08:17:29-08:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/</loc>
+    <lastmod>2021-12-31T17:23:13-08:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/publications.html</loc>
+    <lastmod>2022-01-14T09:03:19-08:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/software.html</loc>
+    <lastmod>2021-12-31T17:29:59-08:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/posts/2022-01-14-from-wet-lab-to-data-science/</loc>
+    <lastmod>2022-01-14T08:45:17-08:00</lastmod>
+  </url>
+</urlset>

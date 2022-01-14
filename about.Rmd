@@ -1,0 +1,11 @@
+---
+title: "About"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+I was born in Mataro, close to Barcelona, Spain. I studied biology at the Universitat de Barcelona from 2002 to 2007. In 2008 I started my PhD in the neuroscience program at the Universitat Autonoma de Barcelona under the supervision of Dr. Xavier Navarro, finishing my thesis entitled ‘Terapia celular para lesiones que afectan a la medula espinal’ (Cell therapy for injuries affecting the spinal cord). In 2014, I moved to Edmonton, Canada, for a postdoctoral position at the University of Alberta under the supervision of Dr. Karim Fouad. There I worked on the interaction between neuroinflammation and rehabilitative motor training after cervical spinal cord injury. Since November 2018, I have been working at the University of California San Francisco in a team led by Dr. Adam Ferguson, where we work on the application of data science to accelerate neurotrauma research and translation.
+
+When I am not doing research or coding, I am visiting mountains, climbing or catching up with friends.

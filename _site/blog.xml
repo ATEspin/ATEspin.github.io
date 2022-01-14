@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Abel Torres Espín</title>
+    <link>https://atespin.github.io/</link>
+    <atom:link href="https://atespin.github.io/blog.xml" rel="self" type="application/rss+xml"/>
+    <description>My Blog
+</description>
+    <generator>Distill</generator>
+    <lastBuildDate>Fri, 14 Jan 2022 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>From wet lab to data science</title>
+      <dc:creator>Abel Torres Espín</dc:creator>
+      <link>https://atespin.github.io/posts/2022-01-14-from-wet-lab-to-data-science</link>
+      <description>How I think experimental researchers are data scientist</description>
+      <category>Data science</category>
+      <guid>https://atespin.github.io/posts/2022-01-14-from-wet-lab-to-data-science</guid>
+      <pubDate>Fri, 14 Jan 2022 00:00:00 +0000</pubDate>
+    </item>
+  </channel>
+</rss>

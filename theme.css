@@ -117,12 +117,17 @@ d-appendix {
   border: 1px solid black;
   padding: 1px;
   display: inline-block;
+  text-align: center;
+  font-size: 13px;
+  width: 100px;
 }
 
 .open{
-  text-align: center;
   background-color: #cef2db;
   color: #1f733e;
-  font-size: 13px;
-  width: 100px;
+}
+
+.software{
+  background-color: #cef2db;
+  color: #f5b642;
 }

@@ -2,19 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" version="1.0">
   <url>
     <loc>https://atespin.github.io/about.html</loc>
-    <lastmod>2022-01-14T07:06:21-08:00</lastmod>
+    <lastmod>2022-06-27T22:35:59-07:00</lastmod>
   </url>
   <url>
     <loc>https://atespin.github.io/blog.html</loc>
     <lastmod>2022-01-14T08:17:29-08:00</lastmod>
   </url>
   <url>
+    <loc>https://atespin.github.io/co-authors.html</loc>
+    <lastmod>2022-06-18T21:27:49-07:00</lastmod>
+  </url>
+  <url>
     <loc>https://atespin.github.io/</loc>
-    <lastmod>2021-12-31T17:23:13-08:00</lastmod>
+    <lastmod>2022-06-27T22:37:00-07:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/preprintData.html</loc>
+    <lastmod>2022-06-18T18:35:47-07:00</lastmod>
   </url>
   <url>
     <loc>https://atespin.github.io/publications.html</loc>
-    <lastmod>2022-01-14T09:03:19-08:00</lastmod>
+    <lastmod>2022-06-27T22:11:23-07:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/research.html</loc>
+    <lastmod>2022-06-27T22:10:22-07:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/Tools.html</loc>
+    <lastmod>2022-06-18T19:05:06-07:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/posts/2022-06-18-collaboration-network/</loc>
+    <lastmod>2022-06-19T07:40:48-07:00</lastmod>
+  </url>
+  <url>
+    <loc>https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r/</loc>
+    <lastmod>2022-06-19T07:46:36-07:00</lastmod>
   </url>
   <url>
     <loc>https://atespin.github.io/posts/2022-01-14-from-wet-lab-to-data-science/</loc>

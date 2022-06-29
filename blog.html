@@ -88,22 +88,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>Abel Torres Espín: Blog</title>
+  <title>data(x){DRIVEN}: Blog</title>
 
   <meta property="description" itemprop="description" content="Ideas, thoughts and more..."/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Abel Torres Espín: Blog"/>
+  <meta property="og:title" content="data(x){DRIVEN}: Blog"/>
   <meta property="og:type" content="article"/>
   <meta property="og:description" content="Ideas, thoughts and more..."/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="Abel Torres Espín"/>
+  <meta property="og:site_name" content="data(x){DRIVEN}"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Abel Torres Espín: Blog"/>
+  <meta property="twitter:title" content="data(x){DRIVEN}: Blog"/>
   <meta property="twitter:description" content="Ideas, thoughts and more..."/>
 
   <!--/radix_placeholder_meta_tags-->
@@ -2234,14 +2234,19 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     border: 1px solid black;
     padding: 1px;
     display: inline-block;
+    text-align: center;
+    font-size: 13px;
+    width: 100px;
   }
 
   .open{
-    text-align: center;
     background-color: #cef2db;
     color: #1f733e;
-    font-size: 13px;
-    width: 100px;
+  }
+
+  .software{
+    background-color: #cef2db;
+    color: #f5b642;
   }</style>
   <style type="text/css">
   /* base style */
@@ -2427,14 +2432,18 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a href="index.html" class="title">Abel Torres Espín</a>
+<a href="index.html" class="title">data(x){DRIVEN}</a>
 <input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
 </div>
 <div class="nav-right">
 <a href="index.html">Home</a>
+<a href="research.html">Research</a>
+<a href="about.html">People</a>
+<a href="publications.html">Publications</a>
+<a href="co-authors.html">Co-authors</a>
+<a href="Tools.html">Tools</a>
+<a href="preprintData.html">Pre-print and Data</a>
 <a href="blog.html">Blog</a>
-<a href="publications.html">Research</a>
-<a href="about.html">About</a>
 <a href="https://github.com/ATEspin">
 <i class="fab fa-github" aria-hidden="true"></i>
 </a>
@@ -2584,6 +2593,34 @@ function init_posts_list() {
 <div class="posts-container posts-with-sidebar posts-apply-limit l-screen-inset">
 <div class="posts-list">
 <h1 class="posts-list-caption" data-caption="Blog">Blog</h1>
+<a href="posts/2022-06-18-collaboration-network/" class="post-preview">
+<script class="post-metadata" type="text/json">{"categories":[]}</script>
+<div class="metadata">
+<div class="publishedDate">June 18, 2022</div>
+</div>
+<div class="thumbnail">
+<img src="posts/2022-06-18-collaboration-network/collaboration-network_files/figure-html5/unnamed-chunk-5-1.png"/>
+</div>
+<div class="description">
+<h2>Co-author Network</h2>
+<div class="dt-tags"></div>
+<p>Building a network of co-authors in R</p>
+</div>
+</a>
+<a href="posts/2022-06-18-reproducing-schotter-in-r/" class="post-preview">
+<script class="post-metadata" type="text/json">{"categories":[]}</script>
+<div class="metadata">
+<div class="publishedDate">June 18, 2022</div>
+</div>
+<div class="thumbnail">
+<img src="posts/2022-06-18-reproducing-schotter-in-r/reproducing-schotter-in-r_files/figure-html5/unnamed-chunk-3-1.png"/>
+</div>
+<div class="description">
+<h2>Reproducing Schotter in R</h2>
+<div class="dt-tags"></div>
+<p>A short description of the post.</p>
+</div>
+</a>
 <a href="posts/2022-01-14-from-wet-lab-to-data-science/" class="post-preview">
 <script class="post-metadata" type="text/json">{"categories":["Data science"]}</script>
 <div class="metadata">
@@ -2607,7 +2644,7 @@ function init_posts_list() {
 <ul>
 <li>
 <a href="#category:Articles">Articles</a>
-<span class="category-count">(1)</span>
+<span class="category-count">(3)</span>
 </li>
 <li>
 <a href="#category:Data_science">Data science</a>
@@ -2631,7 +2668,8 @@ function init_posts_list() {
 
 
 <div class="d-article">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

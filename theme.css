@@ -131,3 +131,30 @@ d-appendix {
   background-color: #cef2db;
   color: #f5b642;
 }
+
+.col-6 {
+    -ms-flex: 0 0 50%;
+    flex: 0 0 90%;
+    max-width: 100%;
+}
+
+.d-article{
+    grid-column-gap: 25px;
+}
+
+.avatar {
+    float: left;
+    margin-right: 10px; 
+    width: 200px;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 8px white inset; 
+}
+
+#particles-js{
+  width: 100%;
+  height: 100%;
+  background-color: #b61924;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}

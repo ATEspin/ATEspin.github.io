@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -87,26 +88,28 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>data(x){DRIVEN}: Publications</title>
+  <title>data DRIVEN Lab: Publications</title>
 
 
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="data(x){DRIVEN}: Publications"/>
+  <meta property="og:title" content="data DRIVEN Lab: Publications"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="data(x){DRIVEN}"/>
+  <meta property="og:site_name" content="data DRIVEN Lab"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="data(x){DRIVEN}: Publications"/>
+  <meta property="twitter:title" content="data DRIVEN Lab: Publications"/>
+  <meta property="twitter:site" content="@AbelTorresEspi2"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title"]}},"value":[{"type":"character","attributes":{},"value":["Publications"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","editor_options","output"]}},"value":[{"type":"character","attributes":{},"value":["Publications"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["chunk_output_type"]}},"value":[{"type":"character","attributes":{},"value":["console"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -454,8 +457,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -784,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1025,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1860,9 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1874,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1973,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1995,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2243,6 +2282,33 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   .software{
     background-color: #cef2db;
     color: #f5b642;
+  }
+
+  .col-6 {
+      -ms-flex: 0 0 50%;
+      flex: 0 0 90%;
+      max-width: 100%;
+  }
+
+  .d-article{
+      grid-column-gap: 25px;
+  }
+
+  .avatar {
+      float: left;
+      margin-right: 10px; 
+      width: 200px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px 8px white inset; 
+  }
+
+  #particles-js{
+    width: 100%;
+    height: 100%;
+    background-color: #b61924;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
   }</style>
   <style type="text/css">
   /* base style */
@@ -2399,16 +2465,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
-  <link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
-  <script src="site_libs/datatables-binding-0.20/datatables.js"></script>
-  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
-  <link href="site_libs/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
-  <script src="site_libs/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
-  <link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
-  <script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+  <script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2437,7 +2494,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a href="index.html" class="title">data(x){DRIVEN}</a>
+<a href="index.html" class="title">data DRIVEN Lab</a>
 <input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
 </div>
 <div class="nav-right">
@@ -2448,7 +2505,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <a href="co-authors.html">Co-authors</a>
 <a href="Tools.html">Tools</a>
 <a href="preprintData.html">Pre-print and Data</a>
-<a href="blog.html">Blog</a>
 <a href="https://github.com/ATEspin">
 <i class="fab fa-github" aria-hidden="true"></i>
 </a>
@@ -2478,18 +2534,446 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p><a
-href="https://scholar.google.ca/citations?user=c7vjfOUAAAAJ&amp;hl=en">Google
-Scholar</a></p>
+<p><a href="https://scholar.google.ca/citations?user=c7vjfOUAAAAJ&amp;hl=en">Google Scholar</a></p>
+<!-- ```{r eval=FALSE} -->
+<!-- pub_df<-pub_df%>%select(-DOI, -PMID) -->
+<!--   # mutate(Authors = as.character(Authors)) %>%  -->
+<!--   # rowwise() %>%  -->
+<!--   # mutate(Authors = case_when(nchar(Authors) > 30 ~ -->
+<!--   #       paste(str_sub(Authors, 1, 30), "..."), -->
+<!--   #       nchar(Authors) <= 30 ~ Authors)) -->
+<!-- datatable(pub_df, rownames = NULL, escape = c(TRUE, FALSE, TRUE),  -->
+<!--           width = 1000, -->
+<!--           options = list( -->
+<!--             autoWidth = FALSE, -->
+<!--             columnsDefs = list(list(width = "100px", targets = "_all")) -->
+<!-- )) -->
+<!-- ``` -->
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-44c5fa5923b24590167a" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-44c5fa5923b24590167a">{"x":{"filter":"none","vertical":false,"data":[["2022","2022","2022","2022","2022","2022","2022","2022","2022","2021","2021","2021","2021","2021","2021","2021","2021","2021","2021","2021","2020","2020","2020","2020","2020","2018","2018","2018","2017","2017","2016","2016","2016","2015","2015","2015","2014","2014","2013","2013","2013","2011","2010"],["<a href=\"https://pubmed.ncbi.nlm.nih.gov/35614038\" target=\"_blank\">Chondroitin sulfate proteoglycans prevent immune cell phenotypic conversion and<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/35497350\" target=\"_blank\">Unsupervised Machine Learning on Motion Capture Data Uncovers Movement Strategies<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/35403104\" target=\"_blank\">Empowering Data Sharing and Analytics through the Open Data Commons for Traumatic<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/35390006\" target=\"_blank\">Expert-augmented automated machine learning optimizes hemodynamic predictors of<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/35364586\" target=\"_blank\">Decision tree-based machine learning analysis of intraoperative vasopressor use<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/35333958\" target=\"_blank\">Using hierarchical unsupervised learning to integrate and reduce multi-level and <\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/35255740\" target=\"_blank\">Appendicular Fracture and Polytrauma Correlate with Outcome of Spinal Cord<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/35065038\" target=\"_blank\">Effect of frailty on 6-month outcome after traumatic brain injury: a multicentre <\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/34310331\" target=\"_blank\">Mixture Model Framework for Traumatic Brain Injury Prognosis Using Heterogeneous <\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/34892511\" target=\"_blank\">Quantifying the kinematic features of dexterous finger movements in nonhuman<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/34803899\" target=\"_blank\">FAIR Data Reuse in Traumatic Brain Injury: Exploring Inflammation and Age as<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/34783309\" target=\"_blank\">Topological network analysis of patient similarity for precision management of<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/34347243\" target=\"_blank\">Promoting FAIR Data Through Community-driven Agile Design: the Open Data Commons <\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/34174901\" target=\"_blank\">Beyond the lesion site: minocycline augments inflammation and anxiety-like<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/33651310\" target=\"_blank\">Excavating FAIR Data: the Case of the Multicenter Animal Spinal Cord Injury Study<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/33600814\" target=\"_blank\">Automation of training and testing motor and related tasks in pre-clinical<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/33512429\" target=\"_blank\">Diagnostic blood RNA profiles for human acute spinal cord injury.<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/33443012\" target=\"_blank\">Reproducible analysis of disease space via principal components using the novel R<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/33290776\" target=\"_blank\">Self-directed rehabilitation training intensity thresholds for efficient recovery<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/32597980\" target=\"_blank\">Cisplatin-induced peripheral neuropathy is associated with neuronal<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/33248950\" target=\"_blank\">Injury volume extracted from MRI predicts neurologic outcome in acute spinal cord<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/32357323\" target=\"_blank\">Transforming Research and Clinical Knowledge in Spinal Cord Injury (TRACK-SCI):<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/31940312\" target=\"_blank\">Fecal transplant prevents gut dysbiosis and anxiety-like behaviour after spinal<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/31786212\" target=\"_blank\">Single-session cortical electrical stimulation enhances the efficacy of<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/31608767\" target=\"_blank\">FAIR SCI Ahead: The Evolution of the Open Data Commons for Pre-Clinical Spinal<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/30074874\" target=\"_blank\">Rehabilitative Training in Animal Models of Spinal Cord Injury.<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/29860396\" target=\"_blank\">Eliciting inflammation enables successful rehabilitative training in chronic<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/28847445\" target=\"_blank\">A motorized pellet dispenser to deliver high intensity training of the single<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/29138697\" target=\"_blank\">Following Spinal Cord Injury Transected Reticulospinal Tract Axons Develop New<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/28843345\" target=\"_blank\">Cyclosporine-immunosuppression does not affect survival of transplanted<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/27075820\" target=\"_blank\">Effects of the Post-Spinal Cord Injury Microenvironment on the Differentiation<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/26787859\" target=\"_blank\">Beneficial effects of IL-37 after spinal cord injury in mice.<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/26611563\" target=\"_blank\">Single pellet grasping following cervical spinal cord injury in adult rat using<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/25708702\" target=\"_blank\">Increased migration of olfactory ensheathing cells secreting the Nogo receptor<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/25448160\" target=\"_blank\">Activity dependent therapies modulate the spinal changes that motoneurons suffer <\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/25203134\" target=\"_blank\">Immunosuppression of allogenic mesenchymal stem cells transplantation after<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/24635194\" target=\"_blank\">Bone marrow mesenchymal stromal cells and olfactory ensheathing cells<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/24033405\" target=\"_blank\">Dithiocarb (N,N-diethyldithiocarbamate, DEDTC) decreases levels of biogenic<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/24146830\" target=\"_blank\">Gene expression changes in the injured spinal cord following transplantation of<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/23440700\" target=\"_blank\">Neuroprotection and axonal regeneration after lumbar ventral root avulsion by<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/23291085\" target=\"_blank\">Quantitative assessment of locomotion and interlimb coordination in rats after<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/21476980\" target=\"_blank\">Adult stem cell transplants for spinal cord injury repair: current state in<\/a>","<a href=\"https://pubmed.ncbi.nlm.nih.gov/21209493\" target=\"_blank\">Functional involvement of the lumbar spinal cord after contusion to T8 spinal<\/a>"],["Francos-Quijorna I; Sanchez-Petidier M; Burnside ER; Badea SR; Torres-Espin A; Marshall L; de Winter F; Verhaagen J; Moreno-Manzano V; Bradbury EJ","Keller AV; Torres-Espin A; Peterson TA; Booker J; O'Neill C; Lotz JC; Bailey JF; Ferguson AR; Matthew RP","Chou A; Torres-Espin A; Huie JR; Krukowski K; Lee S; Nolan A; Guglielmetti C; Hawkins BE; Chaumeil MM; Manley GT; Beattie MS; Bresnahan JC; Martone ME; Grethe JS; Rosi S; Ferguson AR","Chou A; Torres-Espin A; Kyritsis N; Huie JR; Khatry S; Funk J; Hay J; Lofgreen A; Shah R; McCann C; Pascual LU; Amorim E; Weinstein PR; Manley GT; Dhall SS; Pan JZ; Bresnahan JC; Beattie MS; Whetstone WD; Ferguson AR","Agarwal N; Aabedi AA; Torres-Espin A; Chou A; Wozny TA; Mummaneni PV; Burke JF; Ferguson AR; Kyritsis N; Dhall SS; Weinstein PR; Duong-Fernandez X; Pan J; Singh V; Hemmerle DD; Talbott JF; Whetstone WD; Bresnahan JC; Manley GT; Beattie MS; DiGiorgio AM","Torres-Espin A; Keller A; Johnson GTA; Fields AJ; Krug R; Ferguson AR; Hargens AR; O'Neill CW; Lotz JC; Bailey JF","Miclau TA; Torres-Espin A; Morshed S; Morioka K; Huie JR; El Naga AN; Chou A; Pascual L; Duong-Fernandez X; Kuo YH; Weinstein P; Dhall SS; Bresnahan JC; Beattie MS; Digiorgio A; Ferguson AR","Galimberti S; Graziano F; Maas AIR; Isernia G; Lecky F; Jain S; Sun X; Gardner RC; Taylor SR; Markowitz AJ; Manley GT; Valsecchi MG; Bellelli G; Citerio G","Kaplan AD; Cheng Q; Mohan KA; Nelson LD; Jain S; Levin H; Torres-Espin A; Chou A; Huie JR; Ferguson AR; McCrea M; Giacino J; Sundaram S; Markowitz AJ; Manley GT","North R; Wurr R; Macon R; Mannion C; Hyde J; Torres-Espin A; Rosenzweig ES; Ferguson AR; Tuszynski MH; Beattie MS; Bresnahan JC; Joiner WM","Huie JR; Chou A; Torres-Espin A; Nielson JL; Yuh EL; Gardner RC; Diaz-Arrastia R; Manley GT; Ferguson AR","Torres-Espin A; Haefeli J; Ehsanian R; Torres D; Almeida CA; Huie JR; Chou A; Morozov D; Sanderson N; Dirlikov B; Suen CG; Nielson JL; Kyritsis N; Hemmerle DD; Talbott JF; Manley GT; Dhall SS; Whetstone WD; Bresnahan JC; Beattie MS; McKenna SL; Pan JZ; Ferguson AR","Torres-Espin A; Almeida CA; Chou A; Huie JR; Chiu M; Vavrek R; Sacramento J; Orr MB; Gensel JC; Grethe JS; Martone ME; Fouad K; Ferguson AR","Schmidt EKA; Raposo PJF; Torres-Espin A; Fenrich KK; Fouad K","Almeida CA; Torres-Espin A; Huie JR; Sun D; Noble-Haeusslein LJ; Young W; Beattie MS; Bresnahan JC; Nielson JL; Ferguson AR","Mah KM; Torres-Espin A; Hallworth BW; Bixby JL; Lemmon VP; Fouad K; Fenrich KK","Kyritsis N; Torres-Espin A; Schupp PG; Huie JR; Chou A; Duong-Fernandez X; Thomas LH; Tsolinas RE; Hemmerle DD; Pascual LU; Singh V; Pan JZ; Talbott JF; Whetstone WD; Burke JF; DiGiorgio AM; Weinstein PR; Manley GT; Dhall SS; Ferguson AR; Oldham MC; Bresnahan JC; Beattie MS","Torres-Espin A; Chou A; Huie JR; Kyritsis N; Upadhyayula PS; Ferguson AR","Fenrich KK; Hallworth BW; Vavrek R; Raposo PJF; Misiaszek JE; Bennett DJ; Fouad K; Torres-Espin A","Calls A; Torres-Espin A; Navarro X; Yuste VJ; Udina E; Bruna J","Mummaneni N; Burke JF; DiGiorgio AM; Thomas LH; Duong-Fernandez X; Harris M; Pascual LU; Ferguson AR; Russell Huie J; Pan JZ; Hemmerle DD; Singh V; Torres-Espin A; Omondi C; Kyritsis N; Weinstein PR; Whetstone WD; Manley GT; Bresnahan JC; Beattie MS; Cohen-Adad J; Dhall SS; Talbott JF","Tsolinas RE; Burke JF; DiGiorgio AM; Thomas LH; Duong-Fernandez X; Harris MH; Yue JK; Winkler EA; Suen CG; Pascual LU; Ferguson AR; Huie JR; Pan JZ; Hemmerle DD; Singh V; Torres-Espin A; Omondi C; Kyritsis N; Haefeli J; Weinstein PR; de Almeida Neto CA; Kuo YH; Taggard D; Talbott JF; Whetstone WD; Manley GT; Bresnahan JC; Beattie MS; Dhall SS","Schmidt EKA; Torres-Espin A; Raposo PJF; Madsen KL; Kigerl KA; Popovich PG; Fenrich KK; Fouad K","Batty NJ; Torres-Espin A; Vavrek R; Raposo P; Fouad K","Fouad K; Bixby JL; Callahan A; Grethe JS; Jakeman LB; Lemmon VP; Magnuson DSK; Martone ME; Nielson JL; Schwab JM; Taylor-Burds C; Tetzlaff W; Torres-Espin A; Ferguson AR","Torres-Espin A; Beaudry E; Fenrich K; Fouad K","Torres-Espin A; Forero J; Fenrich KK; Lucas-Osma AM; Krajacic A; Schmidt E; Vavrek R; Raposo P; Bennett DJ; Popovich PG; Fouad K","Torres-Espin A; Forero J; Schmidt EKA; Fouad K; Fenrich KK","May Z; Fenrich KK; Dahlby J; Batty NJ; Torres-Espin A; Fouad K","May Z; Torres-Espin A; Lucas-Osma AM; Batty NJ; Raposo P; Fenrich KK; Stykel MG; Fuhrmann T; Shoichet M; Biernaskie J; Fouad K","Lopez-Serrano C; Torres-Espin A; Hernandez J; Alvarez-Palomo AB; Requena J; Gasull X; Edel MJ; Navarro X","Coll-Miro M; Francos-Quijorna I; Santos-Nogueira E; Torres-Espin A; Bufler P; Dinarello CA; Lopez-Vales R","Fenrich KK; May Z; Torres-Espin A; Forero J; Bennett DJ; Fouad K","Reginensi D; Carulla P; Nocentini S; Seira O; Serra-Picamal X; Torres-Espin A; Matamoros-Angles A; Gavin R; Moreno-Flores MT; Wandosell F; Samitier J; Trepat X; Navarro X; del Rio JA","Arbat-Plana A; Torres-Espin A; Navarro X; Udina E","Torres-Espin A; Redondo-Castro E; Hernandez J; Navarro X","Torres-Espin A; Redondo-Castro E; Hernandez J; Navarro X","Redondo-Castro E; Romero R; Torres-Espin A; Utrera J; Duque D; Junyent F; Auladell C","Torres-Espin A; Hernandez J; Navarro X","Torres-Espin A; Corona-Quintanilla DL; Fores J; Allodi I; Gonzalez F; Udina E; Navarro X","Redondo-Castro E; Torres-Espin A; Garcia-Alias G; Navarro X","Hernandez J; Torres-Espin A; Navarro X","Garcia-Alias G; Torres-Espin A; Vallejo C; Navarro X"],["Nat Commun. 2022 May 25;13(1):2933. doi: 10.1038/s41467-022-30467-5.","Front Bioeng Biotechnol. 2022 Apr 14;10:868684. doi: 10.3389/fbioe.2022.868684.","Neurotrauma Rep. 2022 Apr 5;3(1):139-157. doi: 10.1089/neur.2021.0061.","PLoS One. 2022 Apr 7;17(4):e0265254. doi: 10.1371/journal.pone.0265254.","Neurosurg Focus. 2022 Apr;52(4):E9. doi: 10.3171/2022.1.FOCUS21743.","Eur Spine J. 2022 Mar 25. pii: 10.1007/s00586-022-07169-z. doi:","J Neurotrauma. 2022 Mar 25. doi: 10.1089/neu.2021.0375.","Lancet Neurol. 2022 Feb;21(2):153-162. doi: 10.1016/S1474-4422(21)00374-4.","IEEE J Biomed Health Inform. 2022 Mar;26(3):1285-1296. doi:","Annu Int Conf IEEE Eng Med Biol Soc. 2021 Nov;2021:6110-6115. doi:","Front Neurol. 2021 Nov 3;12:768735. doi: 10.3389/fneur.2021.768735. eCollection","Elife. 2021 Nov 16;10. pii: 68015. doi: 10.7554/eLife.68015.","Neuroinformatics. 2021 Aug 4. pii: 10.1007/s12021-021-09533-8. doi:","J Neuroinflammation. 2021 Jun 26;18(1):144. doi: 10.1186/s12974-021-02123-0.","Neuroinformatics. 2021 Mar 2. pii: 10.1007/s12021-021-09512-z. doi:","Exp Neurol. 2021 Jun;340:113647. doi: 10.1016/j.expneurol.2021.113647. Epub 2021 ","J Exp Med. 2021 Mar 1;218(3). pii: 211739. doi: 10.1084/jem.20201795.","Elife. 2021 Jan 14;10. pii: 61812. doi: 10.7554/eLife.61812.","Exp Neurol. 2021 May;339:113543. doi: 10.1016/j.expneurol.2020.113543. Epub 2020 ","Neuro Oncol. 2021 Jan 30;23(1):88-99. doi: 10.1093/neuonc/noaa151.","J Clin Neurosci. 2020 Dec;82(Pt B):231-236. doi: 10.1016/j.jocn.2020.11.003. Epub","Neurosurg Focus. 2020 May 1;48(5):E6. doi: 10.3171/2020.2.FOCUS191030.","PLoS One. 2020 Jan 15;15(1):e0226128. doi: 10.1371/journal.pone.0226128.","Exp Neurol. 2020 Feb;324:113136. doi: 10.1016/j.expneurol.2019.113136. Epub 2019 ","J Neurotrauma. 2020 Mar 15;37(6):831-838. doi: 10.1089/neu.2019.6674. Epub 2019","J Neurotrauma. 2018 Aug 15;35(16):1970-1985. doi: 10.1089/neu.2018.5906.","Brain. 2018 Jul 1;141(7):1946-1962. doi: 10.1093/brain/awy128.","Behav Brain Res. 2018 Jan 15;336:67-76. doi: 10.1016/j.bbr.2017.08.033. Epub 2017","Neural Plast. 2017;2017:1932875. doi: 10.1155/2017/1932875. Epub 2017 Sep 12.","Neurosci Lett. 2017 Sep 29;658:67-72. doi: 10.1016/j.neulet.2017.08.045. Epub","Cell Transplant. 2016 Oct;25(10):1833-1852. doi: 10.3727/096368916X691312.","Proc Natl Acad Sci U S A. 2016 Feb 2;113(5):1411-6. doi: 10.1073/pnas.1523212113.","Behav Brain Res. 2016 Feb 15;299:59-71. doi: 10.1016/j.bbr.2015.11.020. Epub 2015","Cell Mol Life Sci. 2015 Jul;72(14):2719-37. doi: 10.1007/s00018-015-1869-3. Epub ","Exp Neurol. 2015 Jan;263:293-305. doi: 10.1016/j.expneurol.2014.10.009. Epub 2014","J Neurotrauma. 2015 Mar 15;32(6):367-80. doi: 10.1089/neu.2014.3562. Epub 2015","Eur J Neurosci. 2014 May;39(10):1704-17. doi: 10.1111/ejn.12542. Epub 2014 Mar","Neuropathol Appl Neurobiol. 2014 Oct;40(6):747-58. doi: 10.1111/nan.12083.","PLoS One. 2013 Oct 11;8(10):e76141. doi: 10.1371/journal.pone.0076141.","Neurotherapeutics. 2013 Apr;10(2):354-68. doi: 10.1007/s13311-013-0178-5.","J Neurosci Methods. 2013 Mar 15;213(2):165-78. doi:","Curr Stem Cell Res Ther. 2011 Sep;6(3):273-87. doi: 10.2174/157488811796575323.","No info"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Year<\/th>\n      <th>Title<\/th>\n      <th>Authors<\/th>\n      <th>Info<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="top">
+<h2>2023</h2>
+<h4>
+<a href="https://doi.org/10.1101/2023.08.02.551674" target="_blank">Improving rigor and reproducibility in western blot experiments with the blotRig analysis software.</a>
+</h4>
+<p>
+Omondi Cleopa; Chou Austin; Fond Kenneth A; Morioka Kazuhito; Joseph Nadine R; Sacramento Jeffrey A; Iorio Emma; Torres-Espin Abel; Radabaugh Hannah L; Davis Jacob A; Gumbel Jason H; Russell Huie J; Ferguson Adam R
+. 
+<i>bioRxiv : the preprint server for biology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1007/s00586-023-07572-0" target="_blank">Multi-domain biopsychosocial postoperative recovery trajectories associate with patient outcomes following lumbar fusion.</a>
+</h4>
+<p>
+Halvorson Ryan T; Torres-Espin Abel; Callahan Matthew; Tay Bobby; O'Neill Conor; Berven Sigurd; Lotz Jeffrey C; Bailey Jeannie F
+. 
+<i>European spine journal : official publication of the European Spine Society, the European Spinal Deformity Society, and the European Section of the Cervical Spine Research Society</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3171/2023.2.SPINE221043" target="_blank">Hypotension requiring vasopressor treatment and increased cardiac complications in elderly spinal cord injury patients: a prospective TRACK-SCI registry study.</a>
+</h4>
+<p>
+Agarwal Nitin; Blitstein Jacob; Lui Austin; Torres-Espin Abel; Vasnarungruengkul Chalisar; Burke John; Mummaneni Praveen V; Dhall Sanjay S; Weinstein Philip R; Duong-Fernandez Xuan; Chou Austin; Pan Jonathan; Singh Vineeta; Ferguson Adam R; Hemmerle Debra D; Kyritsis Nikos; Talbott Jason F; Whetstone William D; Bresnahan Jacqueline C; Beattie Michael S; Manley Geoffrey T; DiGiorgio Anthony
+. 
+<i>Journal of neurosurgery. Spine</i>
+</p>
+<h4>
+<a href="https://doi.org/10.7759/cureus.33978" target="_blank">#OrthoTwitter: Relationship Between Author Twitter Utilization and Academic Impact in Orthopaedic Surgery.</a>
+</h4>
+<p>
+Halvorson Ryan T; Allahabadi Sachin; Cevallos Nicolas; Foley Aidan J; Collins Kelsey; Torres Espin Abel; Feeley Brian T; Pandya Nirav K; Bailey Jeannie F
+. 
+<i>Cureus</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1038/s41598-023-28508-0" target="_blank">Combined space stressors induce independent behavioral deficits predicted by early peripheral blood monocytes.</a>
+</h4>
+<p>
+Rienecker Kira D A; Grue Katherine; Paladini Maria Serena; Frias Elma S; Frattini Valentina; Borlongan Mia C; Chou Austin; Torres-Espin Abel; Krukowski Karen; Ferguson Adam R; Rosi Susanna
+. 
+<i>Scientific reports</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1089/neur.2021.0061" target="_blank">Empowering Data Sharing and Analytics through the Open Data Commons for Traumatic Brain Injury Research.</a>
+</h4>
+<p>
+Chou Austin; Torres-Esp&#xed;n Abel; Huie J Russell; Krukowski Karen; Lee Sangmi; Nolan Amber; Guglielmetti Caroline; Hawkins Bridget E; Chaumeil Myriam M; Manley Geoffrey T; Beattie Michael S; Bresnahan Jacqueline C; Martone Maryann E; Grethe Jeffrey S; Rosi Susanna; Ferguson Adam R
+. 
+<i>Neurotrauma reports</i>
+</p>
+<h2>2022</h2>
+<h4>
+<a href="https://doi.org/10.1002/acn3.51691" target="_blank">A transient inflammatory response contributes to oxaliplatin neurotoxicity in mice.</a>
+</h4>
+<p>
+Calls Aina; Torres-Espin Abel; Tormo Marc; Mart&#xed;nez-Escard&#xf3; Laura; Bonet N&#xfa;ria; Casals Ferran; Navarro Xavier; Yuste V&#xed;ctor J; Udina Esther; Bruna Jordi
+. 
+<i>Annals of clinical and translational neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3389/fneur.2021.768735" target="_blank">FAIR Data Reuse in Traumatic Brain Injury: Exploring Inflammation and Age as Moderators of Recovery in the TRACK-TBI Pilot.</a>
+</h4>
+<p>
+Huie J Russell; Chou Austin; Torres-Espin Abel; Nielson Jessica L; Yuh Esther L; Gardner Raquel C; Diaz-Arrastia Ramon; Manley Geoff T; Ferguson Adam R
+. 
+<i>Frontiers in neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1162/99608f92.a9717b34" target="_blank">Harmonization-Information Trade-Offs for Sharing Individual Participant Data in Biomedicine.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Ferguson Adam R
+. 
+<i>Harvard data science review</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/S1474-4422(22)00309-X" target="_blank">Traumatic brain injury: progress and challenges in prevention, clinical care, and research.</a>
+</h4>
+<p>
+Maas Andrew I R; Menon David K; Manley Geoffrey T; Abrams Mathew; &#xc5;kerlund Cecilia; Andelic Nada; Aries Marcel; Bashford Tom; Bell Michael J; Bodien Yelena G; Brett Benjamin L; B&#xfc;ki Andr&#xe1;s; Chesnut Randall M; Citerio Giuseppe; Clark David; Clasby Betony; Cooper D Jamie; Czeiter Endre; Czosnyka Marek; Dams-O'Connor Kristen; De Keyser V&#xe9;ronique; Diaz-Arrastia Ramon; Ercole Ari; van Essen Thomas A; Falvey &#xc9;anna; Ferguson Adam R; Figaji Anthony; Fitzgerald Melinda; Foreman Brandon; Gantner Dashiell; Gao Guoyi; Giacino Joseph; Gravesteijn Benjamin; Guiza Fabian; Gupta Deepak; Gurnell Mark; Haagsma Juanita A; Hammond Flora M; Hawryluk Gregory; Hutchinson Peter; van der Jagt Mathieu; Jain Sonia; Jain Swati; Jiang Ji-Yao; Kent Hope; Kolias Angelos; Kompanje Erwin J O; Lecky Fiona; Lingsma Hester F; Maegele Marc; Majdan Marek; Markowitz Amy; McCrea Michael; Meyfroidt Geert; Mikoli&#x107; Ana; Mondello Stefania; Mukherjee Pratik; Nelson David; Nelson Lindsay D; Newcombe Virginia; Okonkwo David; Ore&#x161;i&#x10d; Matej; Peul Wilco; Pisic&#x103; Dana; Polinder Suzanne; Ponsford Jennie; Puybasset Louis; Raj Rahul; Robba Chiara; R&#xf8;e Cecilie; Rosand Jonathan; Schueler Peter; Sharp David J; Smielewski Peter; Stein Murray B; von Steinb&#xfc;chel Nicole; Stewart William; Steyerberg Ewout W; Stocchetti Nino; Temkin Nancy; Tenovuo Olli; Theadom Alice; Thomas Ilias; Espin Abel Torres; Turgeon Alexis F; Unterberg Andreas; Van Praag Dominique; van Veen Ernest; Verheyden Jan; Vyvere Thijs Vande; Wang Kevin K W; Wiegers Eveline J A; Williams W Huw; Wilson Lindsay; Wisniewski Stephen R; Younsi Alexander; Yue John K; Yuh Esther L; Zeiler Frederick A; Zeldovich Marina; Zemek Roger
+. 
+<i>The Lancet. Neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1007/s12021-021-09512-z" target="_blank">Excavating FAIR Data: the Case of the Multicenter Animal Spinal Cord Injury Study (MASCIS), Blood Pressure, and Neuro-Recovery.</a>
+</h4>
+<p>
+Almeida Carlos A; Torres-Espin Abel; Huie J Russell; Sun Dongming; Noble-Haeusslein Linda J; Young Wise; Beattie Michael S; Bresnahan Jacqueline C; Nielson Jessica L; Ferguson Adam R
+. 
+<i>Neuroinformatics</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1007/s12021-021-09533-8" target="_blank">Promoting FAIR Data Through Community-driven Agile Design: the Open Data Commons for Spinal Cord Injury (odc-sci.org).</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Almeida Carlos A; Chou Austin; Huie J Russell; Chiu Michael; Vavrek Romana; Sacramento Jeff; Orr Michael B; Gensel John C; Grethe Jeffery S; Martone Maryann E; Fouad Karim; Ferguson Adam R
+. 
+<i>Neuroinformatics</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1089/neu.2021.0375" target="_blank">Appendicular Fracture and Polytrauma Correlate with Outcome of Spinal Cord Injury: A Transforming Research and Clinical Knowledge in Spinal Cord Injury Study.</a>
+</h4>
+<p>
+Miclau Theodore A; Torres-Espin Abel; Morshed Saam; Morioka Kazuhito; Huie J Russell; El Naga Ashraf N; Chou Austin; Pascual Lisa; Duong-Fernandez Xuan; Kuo Yu-Hung; Weinstein Philip; Dhall Sanjay S; Bresnahan Jacqueline C; Beattie Michael S; Digiorgio Anthony; Ferguson Adam R
+. 
+<i>Journal of neurotrauma</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1007/s00586-022-07169-z" target="_blank">Using hierarchical unsupervised learning to integrate and reduce multi-level and multi-paraspinal muscle MRI data in relation to low back pain.</a>
+</h4>
+<p>
+Torres-Espin Abel; Keller Anastasia; Johnson Gabriel T A; Fields Aaron J; Krug Roland; Ferguson Adam R; Hargens Alan R; O'Neill Conor W; Lotz Jeffrey C; Bailey Jeannie F
+. 
+<i>European spine journal : official publication of the European Spine Society, the European Spinal Deformity Society, and the European Section of the Cervical Spine Research Society</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3389/fbioe.2022.868684" target="_blank">Unsupervised Machine Learning on Motion Capture Data Uncovers Movement Strategies in Low Back Pain.</a>
+</h4>
+<p>
+Keller Anastasia V; Torres-Espin Abel; Peterson Thomas A; Booker Jacqueline; O'Neill Conor; Lotz Jeffrey C; Bailey Jeannie F; Ferguson Adam R; Matthew Robert P
+. 
+<i>Frontiers in bioengineering and biotechnology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1038/s41467-022-30467-5" target="_blank">Chondroitin sulfate proteoglycans prevent immune cell phenotypic conversion and inflammation resolution via TLR4 in rodent models of spinal cord injury.</a>
+</h4>
+<p>
+Francos-Quijorna Isaac; S&#xe1;nchez-Petidier Marina; Burnside Emily R; Badea Smaranda R; Torres-Espin Abel; Marshall Lucy; de Winter Fred; Verhaagen Joost; Moreno-Manzano Victoria; Bradbury Elizabeth J
+. 
+<i>Nature communications</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1371/journal.pone.0265254" target="_blank">Expert-augmented automated machine learning optimizes hemodynamic predictors of spinal cord injury outcome.</a>
+</h4>
+<p>
+Chou Austin; Torres-Espin Abel; Kyritsis Nikos; Huie J Russell; Khatry Sarah; Funk Jeremy; Hay Jennifer; Lofgreen Andrew; Shah Rajiv; McCann Chandler; Pascual Lisa U; Amorim Edilberto; Weinstein Philip R; Manley Geoffrey T; Dhall Sanjay S; Pan Jonathan Z; Bresnahan Jacqueline C; Beattie Michael S; Whetstone William D; Ferguson Adam R
+. 
+<i>PloS one</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3171/2022.1.FOCUS21743" target="_blank">Decision tree-based machine learning analysis of intraoperative vasopressor use to optimize neurological improvement in acute spinal cord injury.</a>
+</h4>
+<p>
+Agarwal Nitin; Aabedi Alexander A; Torres-Espin Abel; Chou Austin; Wozny Thomas A; Mummaneni Praveen V; Burke John F; Ferguson Adam R; Kyritsis Nikos; Dhall Sanjay S; Weinstein Philip R; Duong-Fernandez Xuan; Pan Jonathan; Singh Vineeta; Hemmerle Debra D; Talbott Jason F; Whetstone William D; Bresnahan Jacqueline C; Manley Geoffrey T; Beattie Michael S; DiGiorgio Anthony M
+. 
+<i>Neurosurgical focus</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/S1474-4422(21)00374-4" target="_blank">Effect of frailty on 6-month outcome after traumatic brain injury: a multicentre cohort study with external validation.</a>
+</h4>
+<p>
+Galimberti Stefania; Graziano Francesca; Maas Andrew I R; Isernia Giulia; Lecky Fiona; Jain Sonia; Sun Xiaoying; Gardner Raquel C; Taylor Sabrina R; Markowitz Amy J; Manley Geoffrey T; Valsecchi Maria Grazia; Bellelli Giuseppe; Citerio Giuseppe
+. 
+<i>The Lancet. Neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1109/JBHI.2021.3099745" target="_blank">Mixture Model Framework for Traumatic Brain Injury Prognosis Using Heterogeneous Clinical and Outcome Data.</a>
+</h4>
+<p>
+Kaplan Alan D; Cheng Qi; Mohan K Aditya; Nelson Lindsay D; Jain Sonia; Levin Harvey; Torres-Espin Abel; Chou Austin; Huie J Russell; Ferguson Adam R; McCrea Michael; Giacino Joseph; Sundaram Shivshankar; Markowitz Amy J; Manley Geoffrey T
+. 
+<i>IEEE journal of biomedical and health informatics</i>
+</p>
+<h4>
+<a href="https://doi.org/10.7554/eLife.61812" target="_blank">Reproducible analysis of disease space via principal components using the novel R package syndRomics.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Chou Austin; Huie J Russell; Kyritsis Nikos; Upadhyayula Pavan S; Ferguson Adam R
+. 
+<i>eLife</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1109/EMBC46164.2021.9630018" target="_blank">Quantifying the kinematic features of dexterous finger movements in nonhuman primates with markerless tracking.</a>
+</h4>
+<p>
+North Ryan; Wurr Rachele; Macon Ryan; Mannion Christopher; Hyde John; Torres-Espin Abel; Rosenzweig Ephron S; Ferguson Adam R; Tuszynski Mark H; Beattie Michael S; Bresnahan Jacqueline C; Joiner Wilsaan M
+. 
+<i>Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE Engineering in Medicine and Biology Society. Annual International Conference</i>
+</p>
+<h2>2021</h2>
+<h4>
+<a href="https://doi.org/10.1186/s12974-021-02123-0" target="_blank">Beyond the lesion site: minocycline augments inflammation and anxiety-like behavior following SCI in rats through action on the gut microbiota.</a>
+</h4>
+<p>
+Schmidt Emma K A; Raposo Pamela J F; Torres-Espin Abel; Fenrich Keith K; Fouad Karim
+. 
+<i>Journal of neuroinflammation</i>
+</p>
+<h4>
+<a href="https://doi.org/10.7554/eLife.68015" target="_blank">Topological network analysis of patient similarity for precision management of acute blood pressure in spinal cord injury.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Haefeli Jenny; Ehsanian Reza; Torres Dolores; Almeida Carlos A; Huie J Russell; Chou Austin; Morozov Dmitriy; Sanderson Nicole; Dirlikov Benjamin; Suen Catherine G; Nielson Jessica L; Kyritsis Nikos; Hemmerle Debra D; Talbott Jason F; Manley Geoffrey T; Dhall Sanjay S; Whetstone William D; Bresnahan Jacqueline C; Beattie Michael S; McKenna Stephen L; Pan Jonathan Z; Ferguson Adam R
+. 
+<i>eLife</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.expneurol.2021.113647" target="_blank">Automation of training and testing motor and related tasks in pre-clinical behavioural and rehabilitative neuroscience.</a>
+</h4>
+<p>
+Mah Kar Men; Torres-Esp&#xed;n Abel; Hallworth Ben W; Bixby John L; Lemmon Vance P; Fouad Karim; Fenrich Keith K
+. 
+<i>Experimental neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.expneurol.2020.113543" target="_blank">Self-directed rehabilitation training intensity thresholds for efficient recovery of skilled forelimb function in rats with cervical spinal cord injury.</a>
+</h4>
+<p>
+Fenrich Keith K; Hallworth Ben W; Vavrek Romana; Raposo Pamela J F; Misiaszek John E; Bennett David J; Fouad Karim; Torres-Espin Abel
+. 
+<i>Experimental neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1084/jem.20201795" target="_blank">Diagnostic blood RNA profiles for human acute spinal cord injury.</a>
+</h4>
+<p>
+Kyritsis Nikos; Torres-Esp&#xed;n Abel; Schupp Patrick G; Huie J Russell; Chou Austin; Duong-Fernandez Xuan; Thomas Leigh H; Tsolinas Rachel E; Hemmerle Debra D; Pascual Lisa U; Singh Vineeta; Pan Jonathan Z; Talbott Jason F; Whetstone William D; Burke John F; DiGiorgio Anthony M; Weinstein Philip R; Manley Geoffrey T; Dhall Sanjay S; Ferguson Adam R; Oldham Michael C; Bresnahan Jacqueline C; Beattie Michael S
+. 
+<i>The Journal of experimental medicine</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1089/neu.2019.6674" target="_blank">FAIR SCI Ahead: The Evolution of the Open Data Commons for Pre-Clinical Spinal Cord Injury Research.</a>
+</h4>
+<p>
+Fouad Karim; Bixby John L; Callahan Alison; Grethe Jeffrey S; Jakeman Lyn B; Lemmon Vance P; Magnuson David S K; Martone Maryann E; Nielson Jessica L; Schwab Jan M; Taylor-Burds Carol; Tetzlaff Wolfram; Torres-Espin Abel; Ferguson Adam R
+. 
+<i>Journal of neurotrauma</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1093/neuonc/noaa151" target="_blank">Cisplatin-induced peripheral neuropathy is associated with neuronal senescence-like response.</a>
+</h4>
+<p>
+Calls Aina; Torres-Espin Abel; Navarro Xavier; Yuste Victor J; Udina Esther; Bruna Jordi
+. 
+<i>Neuro-oncology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3171/2020.2.FOCUS191030" target="_blank">Transforming Research and Clinical Knowledge in Spinal Cord Injury (TRACK-SCI): an overview of initial enrollment and demographics.</a>
+</h4>
+<p>
+Tsolinas Rachel E; Burke John F; DiGiorgio Anthony M; Thomas Leigh H; Duong-Fernandez Xuan; Harris Mark H; Yue John K; Winkler Ethan A; Suen Catherine G; Pascual Lisa U; Ferguson Adam R; Huie J Russell; Pan Jonathan Z; Hemmerle Debra D; Singh Vineeta; Torres-Espin Abel; Omondi Cleopa; Kyritsis Nikos; Haefeli Jenny; Weinstein Philip R; de Almeida Neto Carlos A; Kuo Yu-Hung; Taggard Derek; Talbott Jason F; Whetstone William D; Manley Geoffrey T; Bresnahan Jacqueline C; Beattie Michael S; Dhall Sanjay S
+. 
+<i>Neurosurgical focus</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.jocn.2020.11.003" target="_blank">Injury volume extracted from MRI predicts neurologic outcome in acute spinal cord injury: A prospective TRACK-SCI pilot study.</a>
+</h4>
+<p>
+Mummaneni Nikhil; Burke John F; DiGiorgio Anthony M; Thomas Leigh H; Duong-Fernandez Xuan; Harris Mark; Pascual Lisa U; Ferguson Adam R; Russell Huie J; Pan Jonathan Z; Hemmerle Debra D; Singh Vineeta; Torres-Espin Abel; Omondi Cleopa; Kyritsis Nikos; Weinstein Phillip R; Whetstone William D; Manley Geoffrey T; Bresnahan Jacqueline C; Beattie Michael S; Cohen-Adad Julien; Dhall Sanjay S; Talbott Jason F
+. 
+<i>Journal of clinical neuroscience : official journal of the Neurosurgical Society of Australasia</i>
+</p>
+<h2>2020</h2>
+<h4>
+<a href="https://doi.org/10.1016/j.expneurol.2019.113136" target="_blank">Single-session cortical electrical stimulation enhances the efficacy of rehabilitative motor training after spinal cord injury in rats.</a>
+</h4>
+<p>
+Batty Nicholas J; Torres-Esp&#xed;n Abel; Vavrek Romana; Raposo Pamela; Fouad Karim
+. 
+<i>Experimental neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1371/journal.pone.0226128" target="_blank">Fecal transplant prevents gut dysbiosis and anxiety-like behaviour after spinal cord injury in rats.</a>
+</h4>
+<p>
+Schmidt Emma K A; Torres-Espin Abel; Raposo Pamela J F; Madsen Karen L; Kigerl Kristina A; Popovich Phillip G; Fenrich Keith K; Fouad Karim
+. 
+<i>PloS one</i>
+</p>
+<h2>2019</h2>
+<h4>
+<a href="https://doi.org/10.1089/neu.2018.5906" target="_blank">Rehabilitative Training in Animal Models of Spinal Cord Injury.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Beaudry Eric; Fenrich Keith; Fouad Karim
+. 
+<i>Journal of neurotrauma</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1093/brain/awy128" target="_blank">Eliciting inflammation enables successful rehabilitative training in chronic spinal cord injury.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Forero Juan; Fenrich Keith K; Lucas-Osma Ana M; Krajacic Aleksandra; Schmidt Emma; Vavrek Romana; Raposo Pamela; Bennett David J; Popovich Phillip G; Fouad Karim
+. 
+<i>Brain : a journal of neurology</i>
+</p>
+<h2>2018</h2>
+<h4>
+<a href="https://doi.org/10.1016/j.neulet.2017.08.045" target="_blank">Cyclosporine-immunosuppression does not affect survival of transplanted skin-derived precursor Schwann cells in the injured rat spinal cord.</a>
+</h4>
+<p>
+May Zacnicte; Torres-Esp&#xed;n Abel; Lucas-Osma Ana M; Batty Nicholas J; Raposo Pamela; Fenrich Keith K; Stykel Morgan G; F&#xfc;hrmann Tobias; Shoichet Molly; Biernaskie Jeff; Fouad Karim
+. 
+<i>Neuroscience letters</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1155/2017/1932875" target="_blank">Following Spinal Cord Injury Transected Reticulospinal Tract Axons Develop New Collateral Inputs to Spinal Interneurons in Parallel with Locomotor Recovery.</a>
+</h4>
+<p>
+May Zacnicte; Fenrich Keith K; Dahlby Julia; Batty Nicholas J; Torres-Esp&#xed;n Abel; Fouad Karim
+. 
+<i>Neural plasticity</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.bbr.2017.08.033" target="_blank">A motorized pellet dispenser to deliver high intensity training of the single pellet reaching and grasping task in rats.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Forero Juan; Schmidt Emma K A; Fouad Karim; Fenrich Keith K
+. 
+<i>Behavioural brain research</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3727/096368916X691312" target="_blank">Effects of the Post-Spinal Cord Injury Microenvironment on the Differentiation Capacity of Human Neural Stem Cells Derived from Induced Pluripotent Stem Cells.</a>
+</h4>
+<p>
+L&#xf3;pez-Serrano Clara; Torres-Esp&#xed;n Abel; Hern&#xe1;ndez Joaquim; Alvarez-Palomo Ana B; Requena Jordi; Gasull Xavier; Edel Michael J; Navarro Xavier
+. 
+<i>Cell transplantation</i>
+</p>
+<h2>2016</h2>
+<h4>
+<a href="https://doi.org/10.1016/j.bbr.2015.11.020" target="_blank">Single pellet grasping following cervical spinal cord injury in adult rat using an automated full-time training robot.</a>
+</h4>
+<p>
+Fenrich Keith K; May Zacincte; Torres-Esp&#xed;n Abel; Forero Juan; Bennett David J; Fouad Karim
+. 
+<i>Behavioural brain research</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1073/pnas.1523212113" target="_blank">Beneficial effects of IL-37 after spinal cord injury in mice.</a>
+</h4>
+<p>
+Coll-Mir&#xf3; Marina; Francos-Quijorna Isaac; Santos-Nogueira Eva; Torres-Espin Abel; Bufler Philip; Dinarello Charles A; L&#xf3;pez-Vales Rub&#xe8;n
+. 
+<i>Proceedings of the National Academy of Sciences of the United States of America</i>
+</p>
+<h2>2015</h2>
+<h4>
+<a href="https://doi.org/10.1089/neu.2014.3562" target="_blank">Immunosuppression of allogenic mesenchymal stem cells transplantation after spinal cord injury improves graft survival and beneficial outcomes.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Redondo-Castro Elena; Hernandez Joaquim; Navarro Xavier
+. 
+<i>Journal of neurotrauma</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1007/s00018-015-1869-3" target="_blank">Increased migration of olfactory ensheathing cells secreting the Nogo receptor ectodomain over inhibitory substrates and lesioned spinal cord.</a>
+</h4>
+<p>
+Reginensi Diego; Carulla Patricia; Nocentini Sara; Seira Oscar; Serra-Picamal Xavier; Torres-Esp&#xed;n Abel; Matamoros-Angles Andreu; Gav&#xed;n Rosalina; Moreno-Flores Mar&#xed;a Teresa; Wandosell Francisco; Samitier Josep; Trepat Xavier; Navarro Xavier; del R&#xed;o Jos&#xe9; Antonio
+. 
+<i>Cellular and molecular life sciences : CMLS</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1111/nan.12083" target="_blank">Dithiocarb (N,N-diethyldithiocarbamate, DEDTC) decreases levels of biogenic monoamines in the adult mouse brain.</a>
+</h4>
+<p>
+Redondo-Castro Elena; Romero Rafael; Torres-Esp&#xed;n Abel; Utrera Juana; Duque Daniel; Junyent F&#xe8;lix; Auladell Carme
+. 
+<i>Neuropathology and applied neurobiology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.expneurol.2014.10.009" target="_blank">Activity dependent therapies modulate the spinal changes that motoneurons suffer after a peripheral nerve injury.</a>
+</h4>
+<p>
+Arbat-Plana Ariadna; Torres-Esp&#xed;n Abel; Navarro Xavier; Udina Esther
+. 
+<i>Experimental neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1111/ejn.12542" target="_blank">Bone marrow mesenchymal stromal cells and olfactory ensheathing cells transplantation after spinal cord injury--a morphological and functional comparison in rats.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Redondo-Castro Elena; Hern&#xe1;ndez Joaquim; Navarro Xavier
+. 
+<i>The European journal of neuroscience</i>
+</p>
+<h2>2014</h2>
+<h4>
+<a href="https://doi.org/10.1371/journal.pone.0076141" target="_blank">Gene expression changes in the injured spinal cord following transplantation of mesenchymal stem cells or olfactory ensheathing cells.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Hern&#xe1;ndez Joaquim; Navarro Xavier
+. 
+<i>PloS one</i>
+</p>
+<h2>2013</h2>
+<h4>
+<a href="https://doi.org/10.1007/s13311-013-0178-5" target="_blank">Neuroprotection and axonal regeneration after lumbar ventral root avulsion by re-implantation and mesenchymal stem cells transplant combined therapy.</a>
+</h4>
+<p>
+Torres-Esp&#xed;n Abel; Corona-Quintanilla Dora Luz; For&#xe9;s Joaquim; Allodi Ilary; Gonz&#xe1;lez Francisco; Udina Esther; Navarro Xavier
+. 
+<i>Neurotherapeutics : the journal of the American Society for Experimental NeuroTherapeutics</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.jneumeth.2012.12.024" target="_blank">Quantitative assessment of locomotion and interlimb coordination in rats after different spinal cord injuries.</a>
+</h4>
+<p>
+Redondo-Castro Elena; Torres-Esp&#xed;n Abel; Garc&#xed;a-Al&#xed;as Guillermo; Navarro Xavier
+. 
+<i>Journal of neuroscience methods</i>
+</p>
+<h2>2012</h2>
+<h4>
+<a href="https://doi.org/10.2174/157488811796575323" target="_blank">Adult stem cell transplants for spinal cord injury repair: current state in preclinical research.</a>
+</h4>
+<p>
+Hern&#xe1;ndez Joaquim; Torres-Esp&#xed;n Abel; Navarro Xavier
+. 
+<i>Current stem cell research &amp;amp; therapy</i>
+</p>
+<h2>2011</h2>
+<h4>
+<a href="https://doi.org/10.3233/RNN-2010-0549" target="_blank">Functional involvement of the lumbar spinal cord after contusion to T8 spinal segment of the rat.</a>
+</h4>
+<p>
+Garc&#xed;a-Al&#xed;as Guillermo; Torres-Esp&#xed;n Abel; Vallejo Carolina; Navarro Xavier
+. 
+<i>Restorative neurology and neuroscience</i>
+</p>
 </div>
-<div class="layout-chunk" data-layout="l-body">
-
 </div>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2501,12 +2985,17 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom"></div>
+<div class="appendix-bottom">
+<h3 id="updates-and-corrections">Corrections</h3>
+<p>If you see mistakes or want to suggest changes, please <a href="https://github.com/ATEspin/distill_ATE_blog/issues/new">create an issue</a> on the source repository.</p>
+<h3 id="reuse">Reuse</h3>
+<p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Source code is available at <a href="https://github.com/ATEspin/distill_ATE_blog">https://github.com/ATEspin/distill_ATE_blog</a>, unless otherwise noted. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
+</div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
 <p>
-Last updated: <script> document.write(new Date().toLocaleDateString()); </script>
+Last updated: 8/12/2023
 </p>
 <p>
 Reuse: Text and figures are licensed under Creative Commons Attribution <a href = "https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.<br>Source code is available at <a href ="https://github.com/ATEspin/distill_ATE_blog">https://github.com/ATEspin/distill_ATE_blog</a>, <br>unless otherwise noted.

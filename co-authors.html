@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -87,20 +88,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>data(x){DRIVEN}: Co-authors</title>
+  <title>data DRIVEN Lab: Co-authors</title>
 
 
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="data(x){DRIVEN}: Co-authors"/>
+  <meta property="og:title" content="data DRIVEN Lab: Co-authors"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="data(x){DRIVEN}"/>
+  <meta property="og:site_name" content="data DRIVEN Lab"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="data(x){DRIVEN}: Co-authors"/>
+  <meta property="twitter:title" content="data DRIVEN Lab: Co-authors"/>
+  <meta property="twitter:site" content="@AbelTorresEspi2"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
@@ -454,8 +457,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -784,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1025,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1860,9 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1874,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1973,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1995,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2243,6 +2282,33 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   .software{
     background-color: #cef2db;
     color: #f5b642;
+  }
+
+  .col-6 {
+      -ms-flex: 0 0 50%;
+      flex: 0 0 90%;
+      max-width: 100%;
+  }
+
+  .d-article{
+      grid-column-gap: 25px;
+  }
+
+  .avatar {
+      float: left;
+      margin-right: 10px; 
+      width: 200px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px 8px white inset; 
+  }
+
+  #particles-js{
+    width: 100%;
+    height: 100%;
+    background-color: #b61924;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
   }</style>
   <style type="text/css">
   /* base style */
@@ -2399,11 +2465,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
   <link href="site_libs/vis-9.1.0/vis-network.min.css" rel="stylesheet" />
   <script src="site_libs/vis-9.1.0/vis-network.min.js"></script>
-  <script src="site_libs/visNetwork-binding-2.1.0/visNetwork.js"></script>
+  <script src="site_libs/visNetwork-binding-2.1.2/visNetwork.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2432,7 +2498,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a href="index.html" class="title">data(x){DRIVEN}</a>
+<a href="index.html" class="title">data DRIVEN Lab</a>
 <input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
 </div>
 <div class="nav-right">
@@ -2443,7 +2509,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <a href="co-authors.html">Co-authors</a>
 <a href="Tools.html">Tools</a>
 <a href="preprintData.html">Pre-print and Data</a>
-<a href="blog.html">Blog</a>
 <a href="https://github.com/ATEspin">
 <i class="fab fa-github" aria-hidden="true"></i>
 </a>
@@ -2471,16 +2536,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>The nodes in the network represent researchers with whom I have
-published. Colors indicate the institution in which I was placed when I
-first published with each co-author.</p>
-<div class="line-block"> <strong>UB:</strong> Universitat de Barcelona,
-Barcelona, Spain<br />
- <strong>UAB:</strong> Universitat Autonoma de Barcelona,Bellaterra del
-Valles, Sapin<br />
+<p>The nodes in the network represent researchers with whom I have published. Colors indicate the institution in which I was placed when I first published with each co-author.</p>
+<div class="line-block"> <strong>UB:</strong> Universitat de Barcelona, Barcelona, Spain<br />
+ <strong>UAB:</strong> Universitat Autonoma de Barcelona,Bellaterra del Valles, Sapin<br />
  <strong>UofA:</strong> University of Alberta, Edmonton, Canada<br />
- <strong>UCSF:</strong> University of California San Francisco, San
-Francisco, USA</div>
+ <strong>UCSF:</strong> University of California San Francisco, San Francisco, USA</div>
 <p><br></p>
 <div class="line-block"> <strong>Try:</strong><br />
      Zoom in with your mouse scroll function<br />
@@ -2488,20 +2548,15 @@ Francisco, USA</div>
      Grab a node and move it around<br />
      Click on a node to see its connections</div>
 <p><br></p>
-<p>Created in R using <a
-href="https://cran.r-project.org/web/packages/easyPubMed/index.html">easyPubMed</a>,
-<a href="https://www.tidyverse.org/">tidyverse</a>, <a
-href="https://igraph.org/redirect.html">igraph</a> and <a
-href="https://datastorm-open.github.io/visNetwork/">visNetwork</a></p>
-<a href="/post/network-coauthors/network.html">Learn how to make
-yours!</a> <br>
+<p>Created in R using <a href="https://cran.r-project.org/web/packages/easyPubMed/index.html">easyPubMed</a>, <a href="https://www.tidyverse.org/">tidyverse</a>, <a href="https://igraph.org/redirect.html">igraph</a> and <a href="https://datastorm-open.github.io/visNetwork/">visNetwork</a></p>
+<a href="/post/network-coauthors/network.html">Learn how to make yours!</a>
+<br>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-447e7a8d9059523087be" style="width:900px;height:700px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-447e7a8d9059523087be">{"x":{"nodes":{"id":["Allodi I","Alvarez-Palomo AB","Arbat-Plana A","Auladell C","Batty NJ","Beaudry E","Bennett DJ","Biernaskie J","Bixby JL","Bufler P","Callahan A","Carulla P","Coll-Miro M","Corona-Quintanilla DL","Dahlby J","del Rio JA","del Valle J","Dinarello CA","Duque D","Edel MJ","Fenrich KK","Ferguson AR","Forero J","Fores J","Fouad K","Francos-Quijorna I","Fuhrmann T","Garcia-Alias G","Gasull X","Gavin R","Gonzalez-Perez F","Grethe JS","Hernandez J","Jakeman LB","Junyent F","Krajacic A","Lemmon VP","Lopez-Serrano C","Lopez-Vales R","Lucas-Osma AM","Magnuson DSK","Martone ME","Matamoros-Angles A","May Z","Moreno-Flores MT","Navarro X","Nielson JL","Nocentini S","Popovich PG","Raposo P","Redondo-Castro E","Reginensi D","Requena J","Romero R","Samitier J","Santos-Nogueira E","Santos D","Schmidt EKA","Schwab JM","Seira O","Serra-Picamal X","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F"],"label":["Allodi I","Alvarez-Palomo AB","Arbat-Plana A","Auladell C","Batty NJ","Beaudry E","Bennett DJ","Biernaskie J","Bixby JL","Bufler P","Callahan A","Carulla P","Coll-Miro M","Corona-Quintanilla DL","Dahlby J","del Rio JA","del Valle J","Dinarello CA","Duque D","Edel MJ","Fenrich KK","Ferguson AR","Forero J","Fores J","Fouad K","Francos-Quijorna I","Fuhrmann T","Garcia-Alias G","Gasull X","Gavin R","Gonzalez-Perez F","Grethe JS","Hernandez J","Jakeman LB","Junyent F","Krajacic A","Lemmon VP","Lopez-Serrano C","Lopez-Vales R","Lucas-Osma AM","Magnuson DSK","Martone ME","Matamoros-Angles A","May Z","Moreno-Flores MT","Navarro X","Nielson JL","Nocentini S","Popovich PG","Raposo P","Redondo-Castro E","Reginensi D","Requena J","Romero R","Samitier J","Santos-Nogueira E","Santos D","Schmidt EKA","Schwab JM","Seira O","Serra-Picamal X","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F"],"title":["Allodi I","Alvarez-Palomo AB","Arbat-Plana A","Auladell C","Batty NJ","Beaudry E","Bennett DJ","Biernaskie J","Bixby JL","Bufler P","Callahan A","Carulla P","Coll-Miro M","Corona-Quintanilla DL","Dahlby J","del Rio JA","del Valle J","Dinarello CA","Duque D","Edel MJ","Fenrich KK","Ferguson AR","Forero J","Fores J","Fouad K","Francos-Quijorna I","Fuhrmann T","Garcia-Alias G","Gasull X","Gavin R","Gonzalez-Perez F","Grethe JS","Hernandez J","Jakeman LB","Junyent F","Krajacic A","Lemmon VP","Lopez-Serrano C","Lopez-Vales R","Lucas-Osma AM","Magnuson DSK","Martone ME","Matamoros-Angles A","May Z","Moreno-Flores MT","Navarro X","Nielson JL","Nocentini S","Popovich PG","Raposo P","Redondo-Castro E","Reginensi D","Requena J","Romero R","Samitier J","Santos-Nogueira E","Santos D","Schmidt EKA","Schwab JM","Seira O","Serra-Picamal X","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F"],"group":["UAB","UAB","UAB","UB","UofA","UofA","UofA","UofA","UCSF","UAB","UCSF","UAB","UAB","UAB","UofA","UAB","UAB","UAB","UB","UAB","UofA","UCSF","UofA","UAB","UofA","UAB","UofA","UAB","UAB","UAB","UAB","UCSF","UAB","UCSF","UB","UofA","UCSF","UAB","UAB","UofA","UofA","UCSF","UAB","UofA","UAB","UAB","UCSF","UAB","UofA","UofA","UAB","UAB","UAB","UB","UAB","UAB","UAB","UofA","UCSF","UAB","UAB","UofA","UofA","UCSF","UCSF","UCSF","UAB","UAB","UB","UAB","UofA","UAB"]},"edges":{"from":["Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Arbat-Plana A","Arbat-Plana A","Arbat-Plana A","Auladell C","Auladell C","Auladell C","Auladell C","Auladell C","Auladell C","Auladell C","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Beaudry E","Beaudry E","Beaudry E","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bufler P","Bufler P","Bufler P","Bufler P","Bufler P","Bufler P","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Coll-Miro M","Coll-Miro M","Coll-Miro M","Coll-Miro M","Coll-Miro M","Coll-Miro M","Corona-Quintanilla DL","Corona-Quintanilla DL","Corona-Quintanilla DL","Corona-Quintanilla DL","Dahlby J","Dahlby J","Dahlby J","Dahlby J","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Valle J","del Valle J","del Valle J","del Valle J","del Valle J","del Valle J","del Valle J","Dinarello CA","Dinarello CA","Dinarello CA","Dinarello CA","Dinarello CA","Duque D","Duque D","Duque D","Duque D","Duque D","Edel MJ","Edel MJ","Edel MJ","Edel MJ","Edel MJ","Edel MJ","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Fores J","Fores J","Fores J","Fores J","Fores J","Fores J","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Gasull X","Gasull X","Gasull X","Gasull X","Gasull X","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Junyent F","Junyent F","Junyent F","Junyent F","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lopez-Serrano C","Lopez-Serrano C","Lopez-Serrano C","Lopez-Serrano C","Lopez-Serrano C","Lopez-Vales R","Lopez-Vales R","Lopez-Vales R","Lopez-Vales R","Lopez-Vales R","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Martone ME","Martone ME","Martone ME","Martone ME","Martone ME","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","May Z","May Z","May Z","May Z","May Z","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Nielson JL","Nielson JL","Nielson JL","Nielson JL","Nielson JL","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Popovich PG","Popovich PG","Popovich PG","Popovich PG","Popovich PG","Popovich PG","Raposo P","Raposo P","Raposo P","Raposo P","Raposo P","Redondo-Castro E","Redondo-Castro E","Redondo-Castro E","Redondo-Castro E","Redondo-Castro E","Reginensi D","Reginensi D","Reginensi D","Reginensi D","Reginensi D","Reginensi D","Requena J","Romero R","Romero R","Samitier J","Samitier J","Samitier J","Samitier J","Samitier J","Santos-Nogueira E","Santos-Nogueira E","Santos-Nogueira E","Santos D","Santos D","Schmidt EKA","Schmidt EKA","Schwab JM","Schwab JM","Schwab JM","Seira O","Seira O","Seira O","Seira O","Seira O","Serra-Picamal X","Serra-Picamal X","Serra-Picamal X","Shoichet M","Shoichet M","Shoichet M","Stykel MG","Taylor-Burds C","Taylor-Burds C","Tetzlaff W","Tetzlaff W","Torres-Espin A","Torres-Espin A","Torres-Espin A","Torres-Espin A","Torres-Espin A","Torres-Espin A","Trepat X"],"to":["Corona-Quintanilla DL","Fores J","Gonzalez-Perez F","Hernandez J","Navarro X","Santos-Nogueira E","Torres-Espin A","Udina E","Edel MJ","Gasull X","Hernandez J","Lopez-Serrano C","Navarro X","Requena J","Torres-Espin A","Navarro X","Torres-Espin A","Udina E","del Rio JA","Duque D","Junyent F","Redondo-Castro E","Romero R","Torres-Espin A","Utrera J","Biernaskie J","Dahlby J","Fenrich KK","Fouad K","Fuhrmann T","Lucas-Osma AM","May Z","Raposo P","Shoichet M","Stykel MG","Torres-Espin A","Vavrek R","Fenrich KK","Fouad K","Torres-Espin A","Fenrich KK","Forero J","Fouad K","Krajacic A","Lucas-Osma AM","May Z","Popovich PG","Raposo P","Schmidt EKA","Tetzlaff W","Torres-Espin A","Vavrek R","Fenrich KK","Forero J","Fouad K","Fuhrmann T","Lucas-Osma AM","May Z","Raposo P","Shoichet M","Stykel MG","Tetzlaff W","Torres-Espin A","Callahan A","del Rio JA","Ferguson AR","Fouad K","Grethe JS","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Matamoros-Angles A","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Coll-Miro M","Dinarello CA","Francos-Quijorna I","Lopez-Vales R","Santos-Nogueira E","Torres-Espin A","Ferguson AR","Fouad K","Grethe JS","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","del Rio JA","Gavin R","Matamoros-Angles A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Dinarello CA","Francos-Quijorna I","Lopez-Serrano C","Lopez-Vales R","Santos-Nogueira E","Torres-Espin A","Fores J","Navarro X","Torres-Espin A","Udina E","Fenrich KK","Fouad K","May Z","Torres-Espin A","Gavin R","Lemmon VP","Matamoros-Angles A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Gonzalez-Perez F","Junyent F","Navarro X","Requena J","Santos D","Torres-Espin A","Udina E","Fouad K","Francos-Quijorna I","Lopez-Vales R","Santos-Nogueira E","Torres-Espin A","Junyent F","Redondo-Castro E","Romero R","Torres-Espin A","Utrera J","Gasull X","Hernandez J","Lopez-Serrano C","Navarro X","Requena J","Torres-Espin A","Forero J","Fouad K","Fuhrmann T","Krajacic A","Lucas-Osma AM","May Z","Popovich PG","Raposo P","Schmidt EKA","Shoichet M","Stykel MG","Tetzlaff W","Torres-Espin A","Vavrek R","Fouad K","Grethe JS","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Fouad K","Krajacic A","Lucas-Osma AM","May Z","Popovich PG","Raposo P","Schmidt EKA","Shoichet M","Tetzlaff W","Torres-Espin A","Vavrek R","Garcia-Alias G","Gonzalez-Perez F","Lopez-Vales R","Navarro X","Torres-Espin A","Udina E","Fuhrmann T","Grethe JS","Jakeman LB","Krajacic A","Lemmon VP","Lucas-Osma AM","Magnuson DSK","Martone ME","May Z","Nielson JL","Popovich PG","Raposo P","Schmidt EKA","Schwab JM","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Udina E","Vavrek R","Lopez-Serrano C","Lopez-Vales R","Navarro X","Santos-Nogueira E","Schwab JM","Torres-Espin A","Lucas-Osma AM","May Z","Raposo P","Schmidt EKA","Shoichet M","Stykel MG","Torres-Espin A","Lopez-Vales R","Navarro X","Redondo-Castro E","Torres-Espin A","Udina E","Vallejo C","Hernandez J","Lopez-Serrano C","Navarro X","Requena J","Torres-Espin A","Matamoros-Angles A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Requena J","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Hernandez J","Navarro X","Romero R","Santos-Nogueira E","Santos D","Torres-Espin A","Udina E","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Lopez-Serrano C","Lopez-Vales R","Navarro X","Redondo-Castro E","Requena J","Santos-Nogueira E","Torres-Espin A","Udina E","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Redondo-Castro E","Romero R","Torres-Espin A","Utrera J","Lucas-Osma AM","Popovich PG","Raposo P","Schmidt EKA","Tetzlaff W","Torres-Espin A","Vavrek R","Magnuson DSK","Martone ME","Matamoros-Angles A","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Lopez-Vales R","Navarro X","Requena J","Santos-Nogueira E","Torres-Espin A","Navarro X","Santos-Nogueira E","Schwab JM","Torres-Espin A","Udina E","May Z","Popovich PG","Raposo P","Schmidt EKA","Shoichet M","Stykel MG","Torres-Espin A","Vavrek R","Martone ME","May Z","Nielson JL","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Nielson JL","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Raposo P","Shoichet M","Stykel MG","Tetzlaff W","Torres-Espin A","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Nocentini S","Redondo-Castro E","Reginensi D","Requena J","Samitier J","Santos-Nogueira E","Santos D","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Udina E","Vallejo C","Wandosell F","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Raposo P","Schmidt EKA","Schwab JM","Tetzlaff W","Torres-Espin A","Vavrek R","Schmidt EKA","Shoichet M","Stykel MG","Torres-Espin A","Vavrek R","Romero R","Santos-Nogueira E","Torres-Espin A","Udina E","Utrera J","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Torres-Espin A","Torres-Espin A","Utrera J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Schwab JM","Torres-Espin A","Udina E","Torres-Espin A","Udina E","Torres-Espin A","Vavrek R","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Serra-Picamal X","Tetzlaff W","Torres-Espin A","Trepat X","Wandosell F","Torres-Espin A","Trepat X","Wandosell F","Stykel MG","Tetzlaff W","Torres-Espin A","Torres-Espin A","Tetzlaff W","Torres-Espin A","Torres-Espin A","Vavrek R","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F","Wandosell F"],"weight":[2,2,2,1,14,2,2,14,8,2,1,2,2,7,2,10,2,10,7,4,52,2,12,2,18,2,2,6,8,2,2,4,4,2,2,6,2,1,2,2,14,4,30,2,10,6,2,2,1,2,4,12,3,2,6,2,2,6,2,4,12,12,2,7,3,8,4,2,4,102,2,2,2,4,8,5,2,2,2,2,50,2,4,2,2,7,4,2,4,7,2,2,4,5,4,2,2,2,9,6,4,4,2,4,4,2,2,2,2,4,4,2,4,2,4,4,2,2,2,2,2,2,2,2,2,40,1,6,4,2,9,6,5,6,2,2,4,9,3,1,21,1,7,2,1,2,2,6,2,2,4,2,2,2,4,2,1,2,2,12,2,8,29,2,2,12,9,4,5,5,2,2,1,13,4,4,2,8,8,2,4,34,8,7,2,6,2,14,2,2,4,2,2,3,1,2,6,2,20,2,24,48,2,4,2,2,4,10,4,12,4,2,20,4,6,7,5,4,4,2,2,20,18,2,28,2,14,8,8,2,2,2,2,2,1,8,2,2,18,28,6,4,2,2,1,2,2,2,2,6,2,2,2,2,3,6,4,2,2,2,8,2,18,1,1,2,1,12,2,2,2,42,2,2,2,2,2,2,1,9,3,1,1,5,3,4,2,2,4,16,8,2,4,2,2,10,2,18,2,2,2,1,4,2,2,2,2,2,4,8,5,2,2,2,4,2,2,4,2,34,10,2,2,2,2,2,4,1,2,2,4,4,2,2,2,2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,2,4,6,2,4,4,2,2,2,2,4,36,2,18,2,2,2,10,13,2,2,22,2,92,4,2,4,4,2,2,2,6,2,2,2,2,4,4,3,3,5,2,4,2,2,2,2,7,4,1,1,8,1,2,2,2,2,2,4,4,2,1,8,2,2,2,2,2,2,2,2,1,2,5,1,2,4,2,2,2,2,2,2,2,22,2,2,2,2,2,2,2,2,4,2,4,2,2,4,2,4],"value":[2,2,2,1,14,2,2,14,8,2,1,2,2,7,2,10,2,10,7,4,52,2,12,2,18,2,2,6,8,2,2,4,4,2,2,6,2,1,2,2,14,4,30,2,10,6,2,2,1,2,4,12,3,2,6,2,2,6,2,4,12,12,2,7,3,8,4,2,4,102,2,2,2,4,8,5,2,2,2,2,50,2,4,2,2,7,4,2,4,7,2,2,4,5,4,2,2,2,9,6,4,4,2,4,4,2,2,2,2,4,4,2,4,2,4,4,2,2,2,2,2,2,2,2,2,40,1,6,4,2,9,6,5,6,2,2,4,9,3,1,21,1,7,2,1,2,2,6,2,2,4,2,2,2,4,2,1,2,2,12,2,8,29,2,2,12,9,4,5,5,2,2,1,13,4,4,2,8,8,2,4,34,8,7,2,6,2,14,2,2,4,2,2,3,1,2,6,2,20,2,24,48,2,4,2,2,4,10,4,12,4,2,20,4,6,7,5,4,4,2,2,20,18,2,28,2,14,8,8,2,2,2,2,2,1,8,2,2,18,28,6,4,2,2,1,2,2,2,2,6,2,2,2,2,3,6,4,2,2,2,8,2,18,1,1,2,1,12,2,2,2,42,2,2,2,2,2,2,1,9,3,1,1,5,3,4,2,2,4,16,8,2,4,2,2,10,2,18,2,2,2,1,4,2,2,2,2,2,4,8,5,2,2,2,4,2,2,4,2,34,10,2,2,2,2,2,4,1,2,2,4,4,2,2,2,2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,2,4,6,2,4,4,2,2,2,2,4,36,2,18,2,2,2,10,13,2,2,22,2,92,4,2,4,4,2,2,2,6,2,2,2,2,4,4,3,3,5,2,4,2,2,2,2,7,4,1,1,8,1,2,2,2,2,2,4,4,2,1,8,2,2,2,2,2,2,2,2,1,2,5,1,2,4,2,2,2,2,2,2,2,22,2,2,2,2,2,2,2,2,4,2,4,2,2,4,2,4]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"cicle","size":10,"mass":2,"fixed":false,"font":{"color":"white"}},"manipulation":{"enabled":false},"edges":{"length":10,"physics":true,"smooth":{"enabled":true}},"layout":{"randomSeed":666},"interaction":{"hover":true,"zoomSpeed":1},"physics":{"maxVelocity":25,"minVelocity":10,"stabilization":true}},"groups":["UAB","UB","UofA","UCSF"],"width":"900px","height":"700px","idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","highlight":{"enabled":false,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e07cda7a5baf560cf055" style="width:900px;height:700px;" class="visNetwork html-widget "></div>
+<script type="application/json" data-for="htmlwidget-e07cda7a5baf560cf055">{"x":{"nodes":{"id":["Allodi I","Alvarez-Palomo AB","Arbat-Plana A","Auladell C","Batty NJ","Beaudry E","Bennett DJ","Biernaskie J","Bixby JL","Bufler P","Callahan A","Carulla P","Coll-Miro M","Corona-Quintanilla DL","Dahlby J","del Rio JA","del Valle J","Dinarello CA","Duque D","Edel MJ","Fenrich KK","Ferguson AR","Forero J","Fores J","Fouad K","Francos-Quijorna I","Fuhrmann T","Garcia-Alias G","Gasull X","Gavin R","Gonzalez-Perez F","Grethe JS","Hernandez J","Jakeman LB","Junyent F","Krajacic A","Lemmon VP","Lopez-Serrano C","Lopez-Vales R","Lucas-Osma AM","Magnuson DSK","Martone ME","Matamoros-Angles A","May Z","Moreno-Flores MT","Navarro X","Nielson JL","Nocentini S","Popovich PG","Raposo P","Redondo-Castro E","Reginensi D","Requena J","Romero R","Samitier J","Santos-Nogueira E","Santos D","Schmidt EKA","Schwab JM","Seira O","Serra-Picamal X","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F"],"label":["Allodi I","Alvarez-Palomo AB","Arbat-Plana A","Auladell C","Batty NJ","Beaudry E","Bennett DJ","Biernaskie J","Bixby JL","Bufler P","Callahan A","Carulla P","Coll-Miro M","Corona-Quintanilla DL","Dahlby J","del Rio JA","del Valle J","Dinarello CA","Duque D","Edel MJ","Fenrich KK","Ferguson AR","Forero J","Fores J","Fouad K","Francos-Quijorna I","Fuhrmann T","Garcia-Alias G","Gasull X","Gavin R","Gonzalez-Perez F","Grethe JS","Hernandez J","Jakeman LB","Junyent F","Krajacic A","Lemmon VP","Lopez-Serrano C","Lopez-Vales R","Lucas-Osma AM","Magnuson DSK","Martone ME","Matamoros-Angles A","May Z","Moreno-Flores MT","Navarro X","Nielson JL","Nocentini S","Popovich PG","Raposo P","Redondo-Castro E","Reginensi D","Requena J","Romero R","Samitier J","Santos-Nogueira E","Santos D","Schmidt EKA","Schwab JM","Seira O","Serra-Picamal X","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F"],"title":["Allodi I","Alvarez-Palomo AB","Arbat-Plana A","Auladell C","Batty NJ","Beaudry E","Bennett DJ","Biernaskie J","Bixby JL","Bufler P","Callahan A","Carulla P","Coll-Miro M","Corona-Quintanilla DL","Dahlby J","del Rio JA","del Valle J","Dinarello CA","Duque D","Edel MJ","Fenrich KK","Ferguson AR","Forero J","Fores J","Fouad K","Francos-Quijorna I","Fuhrmann T","Garcia-Alias G","Gasull X","Gavin R","Gonzalez-Perez F","Grethe JS","Hernandez J","Jakeman LB","Junyent F","Krajacic A","Lemmon VP","Lopez-Serrano C","Lopez-Vales R","Lucas-Osma AM","Magnuson DSK","Martone ME","Matamoros-Angles A","May Z","Moreno-Flores MT","Navarro X","Nielson JL","Nocentini S","Popovich PG","Raposo P","Redondo-Castro E","Reginensi D","Requena J","Romero R","Samitier J","Santos-Nogueira E","Santos D","Schmidt EKA","Schwab JM","Seira O","Serra-Picamal X","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F"],"group":["UAB","UAB","UAB","UB","UofA","UofA","UofA","UofA","UCSF","UAB","UCSF","UAB","UAB","UAB","UofA","UAB","UAB","UAB","UB","UAB","UofA","UCSF","UofA","UAB","UofA","UAB","UofA","UAB","UAB","UAB","UAB","UCSF","UAB","UCSF","UB","UofA","UCSF","UAB","UAB","UofA","UofA","UCSF","UAB","UofA","UAB","UAB","UCSF","UAB","UofA","UofA","UAB","UAB","UAB","UB","UAB","UAB","UAB","UofA","UCSF","UAB","UAB","UofA","UofA","UCSF","UCSF","UCSF","UAB","UAB","UB","UAB","UofA","UAB"]},"edges":{"from":["Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Allodi I","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Alvarez-Palomo AB","Arbat-Plana A","Arbat-Plana A","Arbat-Plana A","Auladell C","Auladell C","Auladell C","Auladell C","Auladell C","Auladell C","Auladell C","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Batty NJ","Beaudry E","Beaudry E","Beaudry E","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Bennett DJ","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Biernaskie J","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bixby JL","Bufler P","Bufler P","Bufler P","Bufler P","Bufler P","Bufler P","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Callahan A","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Carulla P","Coll-Miro M","Coll-Miro M","Coll-Miro M","Coll-Miro M","Coll-Miro M","Coll-Miro M","Corona-Quintanilla DL","Corona-Quintanilla DL","Corona-Quintanilla DL","Corona-Quintanilla DL","Dahlby J","Dahlby J","Dahlby J","Dahlby J","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Rio JA","del Valle J","del Valle J","del Valle J","del Valle J","del Valle J","del Valle J","del Valle J","Dinarello CA","Dinarello CA","Dinarello CA","Dinarello CA","Dinarello CA","Duque D","Duque D","Duque D","Duque D","Duque D","Edel MJ","Edel MJ","Edel MJ","Edel MJ","Edel MJ","Edel MJ","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Fenrich KK","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Ferguson AR","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Forero J","Fores J","Fores J","Fores J","Fores J","Fores J","Fores J","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Fouad K","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Francos-Quijorna I","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Fuhrmann T","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Garcia-Alias G","Gasull X","Gasull X","Gasull X","Gasull X","Gasull X","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gavin R","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Gonzalez-Perez F","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Grethe JS","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Hernandez J","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Jakeman LB","Junyent F","Junyent F","Junyent F","Junyent F","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Krajacic A","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lemmon VP","Lopez-Serrano C","Lopez-Serrano C","Lopez-Serrano C","Lopez-Serrano C","Lopez-Serrano C","Lopez-Vales R","Lopez-Vales R","Lopez-Vales R","Lopez-Vales R","Lopez-Vales R","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Lucas-Osma AM","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Magnuson DSK","Martone ME","Martone ME","Martone ME","Martone ME","Martone ME","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","Matamoros-Angles A","May Z","May Z","May Z","May Z","May Z","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Moreno-Flores MT","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Navarro X","Nielson JL","Nielson JL","Nielson JL","Nielson JL","Nielson JL","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Nocentini S","Popovich PG","Popovich PG","Popovich PG","Popovich PG","Popovich PG","Popovich PG","Raposo P","Raposo P","Raposo P","Raposo P","Raposo P","Redondo-Castro E","Redondo-Castro E","Redondo-Castro E","Redondo-Castro E","Redondo-Castro E","Reginensi D","Reginensi D","Reginensi D","Reginensi D","Reginensi D","Reginensi D","Requena J","Romero R","Romero R","Samitier J","Samitier J","Samitier J","Samitier J","Samitier J","Santos-Nogueira E","Santos-Nogueira E","Santos-Nogueira E","Santos D","Santos D","Schmidt EKA","Schmidt EKA","Schwab JM","Schwab JM","Schwab JM","Seira O","Seira O","Seira O","Seira O","Seira O","Serra-Picamal X","Serra-Picamal X","Serra-Picamal X","Shoichet M","Shoichet M","Shoichet M","Stykel MG","Taylor-Burds C","Taylor-Burds C","Tetzlaff W","Tetzlaff W","Torres-Espin A","Torres-Espin A","Torres-Espin A","Torres-Espin A","Torres-Espin A","Torres-Espin A","Trepat X"],"to":["Corona-Quintanilla DL","Fores J","Gonzalez-Perez F","Hernandez J","Navarro X","Santos-Nogueira E","Torres-Espin A","Udina E","Edel MJ","Gasull X","Hernandez J","Lopez-Serrano C","Navarro X","Requena J","Torres-Espin A","Navarro X","Torres-Espin A","Udina E","del Rio JA","Duque D","Junyent F","Redondo-Castro E","Romero R","Torres-Espin A","Utrera J","Biernaskie J","Dahlby J","Fenrich KK","Fouad K","Fuhrmann T","Lucas-Osma AM","May Z","Raposo P","Shoichet M","Stykel MG","Torres-Espin A","Vavrek R","Fenrich KK","Fouad K","Torres-Espin A","Fenrich KK","Forero J","Fouad K","Krajacic A","Lucas-Osma AM","May Z","Popovich PG","Raposo P","Schmidt EKA","Tetzlaff W","Torres-Espin A","Vavrek R","Fenrich KK","Forero J","Fouad K","Fuhrmann T","Lucas-Osma AM","May Z","Raposo P","Shoichet M","Stykel MG","Tetzlaff W","Torres-Espin A","Callahan A","del Rio JA","Ferguson AR","Fouad K","Grethe JS","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Matamoros-Angles A","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Coll-Miro M","Dinarello CA","Francos-Quijorna I","Lopez-Vales R","Santos-Nogueira E","Torres-Espin A","Ferguson AR","Fouad K","Grethe JS","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","del Rio JA","Gavin R","Matamoros-Angles A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Dinarello CA","Francos-Quijorna I","Lopez-Serrano C","Lopez-Vales R","Santos-Nogueira E","Torres-Espin A","Fores J","Navarro X","Torres-Espin A","Udina E","Fenrich KK","Fouad K","May Z","Torres-Espin A","Gavin R","Lemmon VP","Matamoros-Angles A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Gonzalez-Perez F","Junyent F","Navarro X","Requena J","Santos D","Torres-Espin A","Udina E","Fouad K","Francos-Quijorna I","Lopez-Vales R","Santos-Nogueira E","Torres-Espin A","Junyent F","Redondo-Castro E","Romero R","Torres-Espin A","Utrera J","Gasull X","Hernandez J","Lopez-Serrano C","Navarro X","Requena J","Torres-Espin A","Forero J","Fouad K","Fuhrmann T","Krajacic A","Lucas-Osma AM","May Z","Popovich PG","Raposo P","Schmidt EKA","Shoichet M","Stykel MG","Tetzlaff W","Torres-Espin A","Vavrek R","Fouad K","Grethe JS","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Fouad K","Krajacic A","Lucas-Osma AM","May Z","Popovich PG","Raposo P","Schmidt EKA","Shoichet M","Tetzlaff W","Torres-Espin A","Vavrek R","Garcia-Alias G","Gonzalez-Perez F","Lopez-Vales R","Navarro X","Torres-Espin A","Udina E","Fuhrmann T","Grethe JS","Jakeman LB","Krajacic A","Lemmon VP","Lucas-Osma AM","Magnuson DSK","Martone ME","May Z","Nielson JL","Popovich PG","Raposo P","Schmidt EKA","Schwab JM","Shoichet M","Stykel MG","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Udina E","Vavrek R","Lopez-Serrano C","Lopez-Vales R","Navarro X","Santos-Nogueira E","Schwab JM","Torres-Espin A","Lucas-Osma AM","May Z","Raposo P","Schmidt EKA","Shoichet M","Stykel MG","Torres-Espin A","Lopez-Vales R","Navarro X","Redondo-Castro E","Torres-Espin A","Udina E","Vallejo C","Hernandez J","Lopez-Serrano C","Navarro X","Requena J","Torres-Espin A","Matamoros-Angles A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Requena J","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Hernandez J","Navarro X","Romero R","Santos-Nogueira E","Santos D","Torres-Espin A","Udina E","Jakeman LB","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Lopez-Serrano C","Lopez-Vales R","Navarro X","Redondo-Castro E","Requena J","Santos-Nogueira E","Torres-Espin A","Udina E","Lemmon VP","Magnuson DSK","Martone ME","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Redondo-Castro E","Romero R","Torres-Espin A","Utrera J","Lucas-Osma AM","Popovich PG","Raposo P","Schmidt EKA","Tetzlaff W","Torres-Espin A","Vavrek R","Magnuson DSK","Martone ME","Matamoros-Angles A","Nielson JL","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Lopez-Vales R","Navarro X","Requena J","Santos-Nogueira E","Torres-Espin A","Navarro X","Santos-Nogueira E","Schwab JM","Torres-Espin A","Udina E","May Z","Popovich PG","Raposo P","Schmidt EKA","Shoichet M","Stykel MG","Torres-Espin A","Vavrek R","Martone ME","May Z","Nielson JL","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Nielson JL","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Moreno-Flores MT","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Raposo P","Shoichet M","Stykel MG","Tetzlaff W","Torres-Espin A","Navarro X","Nocentini S","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Nocentini S","Redondo-Castro E","Reginensi D","Requena J","Samitier J","Santos-Nogueira E","Santos D","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Udina E","Vallejo C","Wandosell F","Popovich PG","Schwab JM","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Reginensi D","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Raposo P","Schmidt EKA","Schwab JM","Tetzlaff W","Torres-Espin A","Vavrek R","Schmidt EKA","Shoichet M","Stykel MG","Torres-Espin A","Vavrek R","Romero R","Santos-Nogueira E","Torres-Espin A","Udina E","Utrera J","Samitier J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Torres-Espin A","Torres-Espin A","Utrera J","Seira O","Serra-Picamal X","Torres-Espin A","Trepat X","Wandosell F","Schwab JM","Torres-Espin A","Udina E","Torres-Espin A","Udina E","Torres-Espin A","Vavrek R","Taylor-Burds C","Tetzlaff W","Torres-Espin A","Serra-Picamal X","Tetzlaff W","Torres-Espin A","Trepat X","Wandosell F","Torres-Espin A","Trepat X","Wandosell F","Stykel MG","Tetzlaff W","Torres-Espin A","Torres-Espin A","Tetzlaff W","Torres-Espin A","Torres-Espin A","Vavrek R","Trepat X","Udina E","Utrera J","Vallejo C","Vavrek R","Wandosell F","Wandosell F"],"weight":[2,2,2,1,14,2,2,14,8,2,1,2,2,7,2,10,2,10,7,4,52,2,12,2,18,2,2,6,8,2,2,4,4,2,2,6,2,1,2,2,14,4,30,2,10,6,2,2,1,2,4,12,3,2,6,2,2,6,2,4,12,12,2,7,3,8,4,2,4,102,2,2,2,4,8,5,2,2,2,2,50,2,4,2,2,7,4,2,4,7,2,2,4,5,4,2,2,2,9,6,4,4,2,4,4,2,2,2,2,4,4,2,4,2,4,4,2,2,2,2,2,2,2,2,2,40,1,6,4,2,9,6,5,6,2,2,4,9,3,1,21,1,7,2,1,2,2,6,2,2,4,2,2,2,4,2,1,2,2,12,2,8,29,2,2,12,9,4,5,5,2,2,1,13,4,4,2,8,8,2,4,34,8,7,2,6,2,14,2,2,4,2,2,3,1,2,6,2,20,2,24,48,2,4,2,2,4,10,4,12,4,2,20,4,6,7,5,4,4,2,2,20,18,2,28,2,14,8,8,2,2,2,2,2,1,8,2,2,18,28,6,4,2,2,1,2,2,2,2,6,2,2,2,2,3,6,4,2,2,2,8,2,18,1,1,2,1,12,2,2,2,42,2,2,2,2,2,2,1,9,3,1,1,5,3,4,2,2,4,16,8,2,4,2,2,10,2,18,2,2,2,1,4,2,2,2,2,2,4,8,5,2,2,2,4,2,2,4,2,34,10,2,2,2,2,2,4,1,2,2,4,4,2,2,2,2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,2,4,6,2,4,4,2,2,2,2,4,36,2,18,2,2,2,10,13,2,2,22,2,92,4,2,4,4,2,2,2,6,2,2,2,2,4,4,3,3,5,2,4,2,2,2,2,7,4,1,1,8,1,2,2,2,2,2,4,4,2,1,8,2,2,2,2,2,2,2,2,1,2,5,1,2,4,2,2,2,2,2,2,2,22,2,2,2,2,2,2,2,2,4,2,4,2,2,4,2,4],"value":[2,2,2,1,14,2,2,14,8,2,1,2,2,7,2,10,2,10,7,4,52,2,12,2,18,2,2,6,8,2,2,4,4,2,2,6,2,1,2,2,14,4,30,2,10,6,2,2,1,2,4,12,3,2,6,2,2,6,2,4,12,12,2,7,3,8,4,2,4,102,2,2,2,4,8,5,2,2,2,2,50,2,4,2,2,7,4,2,4,7,2,2,4,5,4,2,2,2,9,6,4,4,2,4,4,2,2,2,2,4,4,2,4,2,4,4,2,2,2,2,2,2,2,2,2,40,1,6,4,2,9,6,5,6,2,2,4,9,3,1,21,1,7,2,1,2,2,6,2,2,4,2,2,2,4,2,1,2,2,12,2,8,29,2,2,12,9,4,5,5,2,2,1,13,4,4,2,8,8,2,4,34,8,7,2,6,2,14,2,2,4,2,2,3,1,2,6,2,20,2,24,48,2,4,2,2,4,10,4,12,4,2,20,4,6,7,5,4,4,2,2,20,18,2,28,2,14,8,8,2,2,2,2,2,1,8,2,2,18,28,6,4,2,2,1,2,2,2,2,6,2,2,2,2,3,6,4,2,2,2,8,2,18,1,1,2,1,12,2,2,2,42,2,2,2,2,2,2,1,9,3,1,1,5,3,4,2,2,4,16,8,2,4,2,2,10,2,18,2,2,2,1,4,2,2,2,2,2,4,8,5,2,2,2,4,2,2,4,2,34,10,2,2,2,2,2,4,1,2,2,4,4,2,2,2,2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,2,4,6,2,4,4,2,2,2,2,4,36,2,18,2,2,2,10,13,2,2,22,2,92,4,2,4,4,2,2,2,6,2,2,2,2,4,4,3,3,5,2,4,2,2,2,2,7,4,1,1,8,1,2,2,2,2,2,4,4,2,1,8,2,2,2,2,2,2,2,2,1,2,5,1,2,4,2,2,2,2,2,2,2,22,2,2,2,2,2,2,2,2,4,2,4,2,2,4,2,4]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"cicle","size":10,"mass":2,"fixed":false,"font":{"color":"white"}},"manipulation":{"enabled":false},"edges":{"length":10,"physics":true,"smooth":{"enabled":true}},"layout":{"randomSeed":666},"interaction":{"hover":true,"zoomSpeed":1},"physics":{"maxVelocity":25,"minVelocity":10,"stabilization":true}},"groups":["UAB","UB","UofA","UCSF"],"width":"900px","height":"700px","idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","highlight":{"enabled":false,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2513,12 +2568,17 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom"></div>
+<div class="appendix-bottom">
+<h3 id="updates-and-corrections">Corrections</h3>
+<p>If you see mistakes or want to suggest changes, please <a href="https://github.com/ATEspin/distill_ATE_blog/issues/new">create an issue</a> on the source repository.</p>
+<h3 id="reuse">Reuse</h3>
+<p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Source code is available at <a href="https://github.com/ATEspin/distill_ATE_blog">https://github.com/ATEspin/distill_ATE_blog</a>, unless otherwise noted. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
+</div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
 <p>
-Last updated: <script> document.write(new Date().toLocaleDateString()); </script>
+Last updated: 8/12/2023
 </p>
 <p>
 Reuse: Text and figures are licensed under Creative Commons Attribution <a href = "https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.<br>Source code is available at <a href ="https://github.com/ATEspin/distill_ATE_blog">https://github.com/ATEspin/distill_ATE_blog</a>, <br>unless otherwise noted.

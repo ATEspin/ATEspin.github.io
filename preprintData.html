@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -87,20 +88,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>data(x){DRIVEN}: Other Publications and Data</title>
+  <title>data DRIVEN Lab: Other Publications and Data</title>
 
 
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="data(x){DRIVEN}: Other Publications and Data"/>
+  <meta property="og:title" content="data DRIVEN Lab: Other Publications and Data"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="data(x){DRIVEN}"/>
+  <meta property="og:site_name" content="data DRIVEN Lab"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="data(x){DRIVEN}: Other Publications and Data"/>
+  <meta property="twitter:title" content="data DRIVEN Lab: Other Publications and Data"/>
+  <meta property="twitter:site" content="@AbelTorresEspi2"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
@@ -454,8 +457,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -784,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1025,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1860,9 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1874,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1973,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1995,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2243,6 +2282,33 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   .software{
     background-color: #cef2db;
     color: #f5b642;
+  }
+
+  .col-6 {
+      -ms-flex: 0 0 50%;
+      flex: 0 0 90%;
+      max-width: 100%;
+  }
+
+  .d-article{
+      grid-column-gap: 25px;
+  }
+
+  .avatar {
+      float: left;
+      margin-right: 10px; 
+      width: 200px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px 8px white inset; 
+  }
+
+  #particles-js{
+    width: 100%;
+    height: 100%;
+    background-color: #b61924;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
   }</style>
   <style type="text/css">
   /* base style */
@@ -2399,7 +2465,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2428,7 +2494,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a href="index.html" class="title">data(x){DRIVEN}</a>
+<a href="index.html" class="title">data DRIVEN Lab</a>
 <input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
 </div>
 <div class="nav-right">
@@ -2439,7 +2505,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <a href="co-authors.html">Co-authors</a>
 <a href="Tools.html">Tools</a>
 <a href="preprintData.html">Pre-print and Data</a>
-<a href="blog.html">Blog</a>
 <a href="https://github.com/ATEspin">
 <i class="fab fa-github" aria-hidden="true"></i>
 </a>
@@ -2476,80 +2541,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <h2 id="pre-prints">Pre-Prints</h2>
 <ul>
-<li><p>Austin C Chou, Abel Torres-Espin, J Russell Huie, Karen
-Krukowski, Sangmi Lee, Amber Nolan, Caroline Guglielmetti, Bridget E
-Hawkins, Myriam M Chaumeil, Geoffrey T Manley, Michael S Beattie,
-Jacqueline C Bresnahan, Maryann E Martone, Jeffrey S Grethe, Susanna
-Rosi, Adam R Ferguson (2021). Open Data Commons for Preclinical
-Traumatic Brain Injury Research: Empowering Data Sharing and Big Data
-Analytics. <a
-href="https://doi.org/10.1101/2021.03.15.435178">doi.org/10.1101/2021.03.15.435178</a></p></li>
-<li><p>Alan D Kaplan, Qi Cheng, K Aditya Mohan, Lindsay D Nelson, Sonia
-Jain, Harvey Levin, Abel Torres-Espin, Austin Chou, J Russell Huie, Adam
-R Ferguson, Michael McCrea, Joseph Giacino, Shivshankar Sundaram, Amy J
-Markowitz, Geoffrey T Manley (2020). <a
-href="https://arxiv.org/abs/2012.12310">arxiv.org/abs/2012.12310</a></p></li>
-<li><p>Nikos Kyritsis, Abel Torres-Espin, Patrick G Schupp, J Russell
-Huie, Austin Chou, Xuan Duong Fernandez, Leigh H Thomas, Rachel E
-Tsolinas, Debra D Hemmerle, Lisa U Pascual, Vineeta Singh, Jonathan Z
-Pan, Jason F Talbott, William D Whetstone, John F Burke, Anthony M
-DiGiorgio, Philip R Weinstein, Geoffrey T Manley, Sanjay S Dhall, Adam R
-Ferguson, Michael C Oldham, Jacqueline C Bresnahan, Michael S Beattie
-(2020). Blood RNA Profiles are Diagnostic for Severity in Human Acute
-Spinal Cord Injury. bioRxiv, <a
-href="https://doi.org/10.1101/2020.04.15.037325">doi.org/10.1101/2020.04.15.037325</a></p></li>
+<li><p>Austin C Chou, Abel Torres-Espin, J Russell Huie, Karen Krukowski, Sangmi Lee, Amber Nolan, Caroline Guglielmetti, Bridget E Hawkins, Myriam M Chaumeil, Geoffrey T Manley, Michael S Beattie, Jacqueline C Bresnahan, Maryann E Martone, Jeffrey S Grethe, Susanna Rosi, Adam R Ferguson (2021). Open Data Commons for Preclinical Traumatic Brain Injury Research: Empowering Data Sharing and Big Data Analytics. <a href="https://doi.org/10.1101/2021.03.15.435178">doi.org/10.1101/2021.03.15.435178</a></p></li>
+<li><p>Alan D Kaplan, Qi Cheng, K Aditya Mohan, Lindsay D Nelson, Sonia Jain, Harvey Levin, Abel Torres-Espin, Austin Chou, J Russell Huie, Adam R Ferguson, Michael McCrea, Joseph Giacino, Shivshankar Sundaram, Amy J Markowitz, Geoffrey T Manley (2020). <a href="https://arxiv.org/abs/2012.12310">arxiv.org/abs/2012.12310</a></p></li>
+<li><p>Nikos Kyritsis, Abel Torres-Espin, Patrick G Schupp, J Russell Huie, Austin Chou, Xuan Duong Fernandez, Leigh H Thomas, Rachel E Tsolinas, Debra D Hemmerle, Lisa U Pascual, Vineeta Singh, Jonathan Z Pan, Jason F Talbott, William D Whetstone, John F Burke, Anthony M DiGiorgio, Philip R Weinstein, Geoffrey T Manley, Sanjay S Dhall, Adam R Ferguson, Michael C Oldham, Jacqueline C Bresnahan, Michael S Beattie (2020). Blood RNA Profiles are Diagnostic for Severity in Human Acute Spinal Cord Injury. bioRxiv, <a href="https://doi.org/10.1101/2020.04.15.037325">doi.org/10.1101/2020.04.15.037325</a></p></li>
 </ul>
 <h2 id="datasets">Datasets</h2>
 <ul>
-<li><p>Torres-Espín A., Haefeli J., Ehsanian R., Torres D., Almeida C.
-A., Huie J., Chou A., Dirlikov B., Suen C. G., Nielson J. L., Kyritsis
-N., Duong-Fernandez X., Thomas L. H., Hemmerle D. D., Morozov D.,
-Sanderson N., Talbott J. F., Manley G. T., Dhall S. S., Whetstone W. D.,
-Bresnahan J. C., Beattie M. S., McKenna S. L., Pan J. Z., Ferguson A. R.
-(2021) ASIA Impairment Scale, level of injury, intraoperative time
-series mean arterial pressure and heart rate after spinal cord injury in
-patients in a multi-site retrospective TRACK-SCI cohort: site 2 of 2.
-Open Data Commons for Spinal Cord Injury. ODC-SCI:246 <a
-href="http://dx.doi.org/10.34945/F5MG68">dx.doi.org/10.34945/F5MG68</a></p></li>
-<li><p>Torres-Espin A., Haefeli J., Ehsanian R., Torres D., Almeida C.,
-Huie J., Chou A., Dirlikov B., Suen C. G., Nielson J. L., Kyritsis N.,
-Duong-Fernandez X., Thomas L. H., Hemmerle D. D., Morozov D., Sanderson
-N., Talbott J., Manley G. T., Dhall S. S., Whetstone W. D., Bresnahan J.
-C., Beattie M. S., McKenna S. L., Pan J. Z., Ferguson A. R. (2021) ASIA
-Impairment Scale, level of injury, intraoperative time series mean
-arterial pressure and heart rate after spinal cord injury in patients in
-a multi-site retrospective TRACK-SCI cohort: site 1 of 2. Open Data
-Commons for Spinal Cord Injury. ODC-SCI:245 <a
-href="http://dx.doi.org/10.34945/F5R59J">dx.doi.org/10.34945/F5R59J</a></p></li>
-<li><p>Schmidt, E., Torres-Espin, A., Raposo, P., Madsen, K., Kigerl,
-K., Popovich., P., Fenrich, K.F., Fouad, K. (2019) Data for Fecal
-Transplant Prevents Gut Dysbiosis and Anxiety-like Behaviour After
-Spinal Cord Injury in Rats. Open Data Commons for Spinal Cord Injury.
-ODC-SCI:262 <a
-href="http://doi.org/10.7295/W97942VQ">doi.org/10.7295/W97942VQ</a></p></li>
-<li><p>Torres-Espín A, Hernández J, Navarro X (2013). Expression data
-from rat spinal cord injury and mesenchymal stromal cells (MSC) or
-olfactory ensheathing cells (OEC) transplantation. GEO: <a
-href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE46988">GSE46988</a></p></li>
+<li><p>Torres-Espín A., Haefeli J., Ehsanian R., Torres D., Almeida C. A., Huie J., Chou A., Dirlikov B., Suen C. G., Nielson J. L., Kyritsis N., Duong-Fernandez X., Thomas L. H., Hemmerle D. D., Morozov D., Sanderson N., Talbott J. F., Manley G. T., Dhall S. S., Whetstone W. D., Bresnahan J. C., Beattie M. S., McKenna S. L., Pan J. Z., Ferguson A. R. (2021) ASIA Impairment Scale, level of injury, intraoperative time series mean arterial pressure and heart rate after spinal cord injury in patients in a multi-site retrospective TRACK-SCI cohort: site 2 of 2. Open Data Commons for Spinal Cord Injury. ODC-SCI:246 <a href="http://dx.doi.org/10.34945/F5MG68">dx.doi.org/10.34945/F5MG68</a></p></li>
+<li><p>Torres-Espin A., Haefeli J., Ehsanian R., Torres D., Almeida C., Huie J., Chou A., Dirlikov B., Suen C. G., Nielson J. L., Kyritsis N., Duong-Fernandez X., Thomas L. H., Hemmerle D. D., Morozov D., Sanderson N., Talbott J., Manley G. T., Dhall S. S., Whetstone W. D., Bresnahan J. C., Beattie M. S., McKenna S. L., Pan J. Z., Ferguson A. R. (2021) ASIA Impairment Scale, level of injury, intraoperative time series mean arterial pressure and heart rate after spinal cord injury in patients in a multi-site retrospective TRACK-SCI cohort: site 1 of 2. Open Data Commons for Spinal Cord Injury. ODC-SCI:245 <a href="http://dx.doi.org/10.34945/F5R59J">dx.doi.org/10.34945/F5R59J</a></p></li>
+<li><p>Schmidt, E., Torres-Espin, A., Raposo, P., Madsen, K., Kigerl, K., Popovich., P., Fenrich, K.F., Fouad, K. (2019) Data for Fecal Transplant Prevents Gut Dysbiosis and Anxiety-like Behaviour After Spinal Cord Injury in Rats. Open Data Commons for Spinal Cord Injury. ODC-SCI:262 <a href="http://doi.org/10.7295/W97942VQ">doi.org/10.7295/W97942VQ</a></p></li>
+<li><p>Torres-Espín A, Hernández J, Navarro X (2013). Expression data from rat spinal cord injury and mesenchymal stromal cells (MSC) or olfactory ensheathing cells (OEC) transplantation. GEO: <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE46988">GSE46988</a></p></li>
 </ul>
 <h2 id="thesis">Thesis</h2>
 <ul>
-<li>Abel Torres-Espín (2013). ‘Terapia celular para lesiones que afectan
-a la médula espinal’. English title: ‘Stem cell therapy for injuries
-affecting the spinal cord’. PhD thesis. Universitat Autònoma de
-Barcelona, Spain. (Spanish-English). ISBN: 9788449038150</li>
+<li>Abel Torres-Espín (2013). ‘Terapia celular para lesiones que afectan a la médula espinal’. English title: ‘Stem cell therapy for injuries affecting the spinal cord’. PhD thesis. Universitat Autònoma de Barcelona, Spain. (Spanish-English). ISBN: 9788449038150</li>
 </ul>
 <h2 id="other">Other</h2>
 <ul>
-<li><strong>Magazine Article</strong>: Abel Torres-Espín (2014). ‘El
-trasplantament de cèl·lules mare podria ser beneficiós en lesions de
-medul·la espinal’. English title: ‘Stem cell transplant could be
-beneficious in spinal cord injury’. UAB divulga, Universitat Autònoma de
-Barcelona, Spain. (Catalan) <a href="https://ddd.uab.cat/record/116475"
-class="uri">https://ddd.uab.cat/record/116475</a></li>
+<li><strong>Magazine Article</strong>: Abel Torres-Espín (2014). ‘El trasplantament de cèl·lules mare podria ser beneficiós en lesions de medul·la espinal’. English title: ‘Stem cell transplant could be beneficious in spinal cord injury’. UAB divulga, Universitat Autònoma de Barcelona, Spain. (Catalan) <a href="https://ddd.uab.cat/record/116475" class="uri">https://ddd.uab.cat/record/116475</a></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2561,12 +2572,17 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom"></div>
+<div class="appendix-bottom">
+<h3 id="updates-and-corrections">Corrections</h3>
+<p>If you see mistakes or want to suggest changes, please <a href="https://github.com/ATEspin/distill_ATE_blog/issues/new">create an issue</a> on the source repository.</p>
+<h3 id="reuse">Reuse</h3>
+<p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Source code is available at <a href="https://github.com/ATEspin/distill_ATE_blog">https://github.com/ATEspin/distill_ATE_blog</a>, unless otherwise noted. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
+</div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
 <p>
-Last updated: <script> document.write(new Date().toLocaleDateString()); </script>
+Last updated: 8/12/2023
 </p>
 <p>
 Reuse: Text and figures are licensed under Creative Commons Attribution <a href = "https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.<br>Source code is available at <a href ="https://github.com/ATEspin/distill_ATE_blog">https://github.com/ATEspin/distill_ATE_blog</a>, <br>unless otherwise noted.

@@ -21,7 +21,7 @@
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -32,7 +32,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -457,8 +457,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -828,9 +828,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     display: none !important;
   }
 
+  hr.section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0px;
+  }
+
+
+  d-byline {
+    border-top: none;
+  }
+
   d-article {
     padding-top: 2.5rem;
     padding-bottom: 30px;
+    border-top: none;
   }
 
   d-appendix {
@@ -925,6 +937,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article div.sourceCode pre {
     padding-left: 18px;
     font-size: 14px;
+  }
+
+  /* tweak for Pandoc numbered line within distill */
+  d-article pre.numberSource code > span {
+      left: -2em;
   }
 
   d-article pre {
@@ -1686,6 +1703,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // create d-title
     $('.d-title').changeElementType('d-title');
 
+    // separator
+    var separator = '<hr class="section-separator" style="clear: both"/>';
+    // prepend separator above appendix
+    $('.d-byline').before(separator);
+    $('.d-article').before(separator);
+
     // create d-byline
     var byline = $('<d-byline></d-byline>');
     $('.d-byline').replaceWith(byline);
@@ -1763,8 +1786,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     $('.distill-force-highlighting-css').parent().remove();
 
     // remove empty line numbers inserted by pandoc when using a
-    // custom syntax highlighting theme
-    $('code.sourceCode a:empty').remove();
+    // custom syntax highlighting theme, except when numbering line
+    // in code chunk
+    $('pre:not(.numberLines) code.sourceCode a:empty').remove();
 
     // load distill framework
     load_distill_framework();
@@ -1790,12 +1814,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
       // add orcid ids
       $('.authors-affiliations').find('.author').each(function(i, el) {
         var orcid_id = front_matter.authors[i].orcidID;
+        var author_name = front_matter.authors[i].author
         if (orcid_id) {
           var a = $('<a></a>');
           a.attr('href', 'https://orcid.org/' + orcid_id);
           var img = $('<img></img>');
           img.addClass('orcid-id');
-          img.attr('alt', 'ORCID ID');
+          img.attr('alt', author_name ? 'ORCID ID for ' + author_name : 'ORCID ID');
           img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
           a.append(img);
           $(this).append(a);
@@ -2465,7 +2490,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2521,6 +2546,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 <div class="d-title">
 <h1>Publications</h1>
+
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2553,12 +2579,108 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="top">
 <h2>2024</h2>
 <h4>
-<a href="https://doi.org/10.1002/ctm2.1650" target="_blank">ATF3 is a neuron-specific biomarker for spinal cord injury and ischaemic stroke.</a>
+<a href="https://doi.org/10.1016/j.expneurol.2024.115048" target="_blank">Enhancing data standards to advance translation in spinal cord injury.</a>
 </h4>
 <p>
-Jonathan Z Pan; Zhanqiang Wang; Wei Sun; Peipei Pan; Wei Li; Yongtao Sun; Shoulin Chen; Amity Lin; Wulin Tan; Liangliang He; Jacob Greene; Virginia Yao; Lijun An; Rich Liang; Qifeng Li; Jessica Yu; Lingyi Zhang; Nikolaos Kyritsis; Xuan Duong Fernandez; Sara Moncivais; Esmeralda Mendoza; Pamela Fung; Gongming Wang; Xinhuan Niu; Qihang Du; Zhaoyang Xiao; Yuwen Chang; Peiyuan Lv; J Russell Huie; Abel Torres-Espin; Adam R Ferguson; Debra D Hemmerle; Jason F Talbott; Philip R Weinstein; Lisa U Pascual; Vineeta Singh; Anthony M DiGiorgio; Rajiv Saigal; William D Whetstone; Geoffrey T Manley; Sanjay S Dhall; Jacqueline C Bresnahan; Mervyn Maze; Xiangning Jiang; Neel S Singhal; Michael S Beattie; Hua Su; Zhonghui Guan
+Vanessa K Noonan; Suzanne Humphreys; Fin Biering-S&#xf8;rensen; Susan Charlifue; Yuying Chen; James D Guest; Linda A T Jones; Jennifer French; Eva Widerstr&#xf6;m-Noga; Vance P Lemmon; Allen W Heinemann; Jan M Schwab; Aaron A Phillips; Marzieh Mussavi Rizi; John L K Kramer; Catherine R Jutzeler; Abel Torres-Espin
 . 
-<i>Clinical and translational medicine</i>
+<i>Experimental neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.expneurol.2024.114995" target="_blank">An infrastructure for qualified data sharing and team science in late-stage translational spinal cord injury research.</a>
+</h4>
+<p>
+J Russell Huie; Abel Torres-Espin; Jeffrey Sacramento; Anastasia V Keller; Wilsaan M Joiner; Ryan North; David J Reinkensmeyer; Ephron S Rosenzweig; Jacob Koffler; Mark H Tuszynski; Carolyn J Sparrey; Jessica L Nielson; Michael S Beattie; Jacqueline C Bresnahan; Jeffrey S Grethe; Adam R Ferguson
+. 
+<i>Experimental neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.expneurol.2024.115039" target="_blank">No impact of anti-inflammatory medication on inflammation-driven recovery following cervical spinal cord injury in rats.</a>
+</h4>
+<p>
+Jaison Cucarian; Pamela Raposo; Romana Vavrek; Antoinette Nguyen; Brooklynn Nelson; Philippe Monnier; Abel Torres-Espin; Keith Fenrich; Karim Fouad
+. 
+<i>Experimental neurology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1126/scitranslmed.adk3118" target="_blank">Sexually dimorphic differences in angiogenesis markers are associated with brain aging trajectories in humans.</a>
+</h4>
+<p>
+Abel Torres-Espin; Hannah L Radabaugh; Scott Treiman; Stephen S Fitzsimons; Danielle Harvey; Austin Chou; Cutter A Lindbergh; Kaitlin B Casaletto; Lauren Goldberger; Adam M Staffaroni; Pauline Maillard; Bruce L Miller; Charles DeCarli; Jason D Hinman; Adam R Ferguson; Joel H Kramer; Fanny M Elahi
+. 
+<i>Science translational medicine</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.lana.2024.100915" target="_blank">Clinical profile of patients with acute traumatic brain injury undergoing cranial surgery in the United States: report from the 18-centre TRACK-TBI cohort study.</a>
+</h4>
+<p>
+John K Yue; John H Kanter; Jason K Barber; Michael C Huang; Thomas A van Essen; Mahmoud M Elguindy; Brandon Foreman; Frederick K Korley; Patrick J Belton; Dana Pisic&#x103;; Young M Lee; Ryan S Kitagawa; Mary J Vassar; Xiaoying Sun; Gabriela G Satris; Justin C Wong; Adam R Ferguson; J Russell Huie; Kevin K W Wang; Hansen Deng; Vincent Y Wang; Yelena G Bodien; Sabrina R Taylor; Debbie Y Madhok; Michael A McCrea; Laura B Ngwenya; Anthony M DiGiorgio; Phiroz E Tarapore; Murray B Stein; Ava M Puccio; Joseph T Giacino; Ramon Diaz-Arrastia; Hester F Lingsma; Pratik Mukherjee; Esther L Yuh; Claudia S Robertson; David K Menon; Andrew I R Maas; Amy J Markowitz; Sonia Jain; David O Okonkwo; Nancy R Temkin; Geoffrey T Manley
+. 
+<i>Lancet regional health. Americas</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1089/neur.2024.0028" target="_blank">Bayesian Methods: A Means of Improving Statistical Power in Preclinical Neurotrauma?</a>
+</h4>
+<p>
+Peyton M Mueller; Abel Torres-Esp&#xed;n; Cole Vonder Haar
+. 
+<i>Neurotrauma reports</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1101/2024.09.23.24314235" target="_blank">Chronic Low Back Pain Causal Risk Factors Identified by Mendelian Randomization: a Cross-Sectional Cohort Analysis.</a>
+</h4>
+<p>
+Patricia Zheng; Aaron Scheffler; Susan Ewing; Trisha Hue; Sara Jones; Saam Morshed; Wolf Mehling; Abel Torres-Espin; Anoop Galivanche; Jeffrey Lotz; Thomas Peterson; Conor O'Neill
+. 
+<i>medRxiv : the preprint server for health sciences</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1101/2024.09.26.615237" target="_blank">A Kinematic Deviation Index (KDI) for Evaluation of Forelimb Function in Rodents.</a>
+</h4>
+<p>
+Abel Torres-Espin; Amanda Bernstein; Marwa Soliman; Juan Sebasti&#xe1;n Jara; Yunuen Moreno-L&#xf3;pez; Edmund Hollis
+. 
+<i>bioRxiv : the preprint server for biology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1002/jsp2.1301" target="_blank">Thresholding approaches for estimating paraspinal muscle fat infiltration using T1- and T2-weighted MRI: Comparative analysis using water-fat MRI.</a>
+</h4>
+<p>
+Jessica Ornowski; Lucas Dziesinski; Madeline Hess; Roland Krug; Maryse Fortin; Abel Torres-Espin; Sharmila Majumdar; Valentina Pedoia; Noah B Bonnheim; Jeannie F Bailey
+. 
+<i>JOR spine</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3171/2024.7.SPINE24402" target="_blank">The correlation of neurosurgery motor examinations with ISNCSCI motor examinations in patients with spinal cord injury: a multicenter TRACK-SCI study.</a>
+</h4>
+<p>
+Austin Lui; Phillip A Bonney; John Burke; John H Kanter; John K Yue; Naoki Takegami; Phiroz E Tarapore; Michael Huang; Praveen V Mummaneni; Sanjay S Dhall; Debra D Hemmerle; Adam R Ferguson; Abel Torres-Espin; Xuan Duong-Fernandez; Nicole Lai; Rajiv Saigal; Jonathan Pan; Vineeta Singh; Nikos Kyritsis; Jason F Talbott; Lisa U Pascual; J Russell Huie; William D Whetstone; Jacqueline C Bresnahan; Michael S Beattie; Philip R Weinstein; Geoffrey T Manley; Leigh Ann O'Banion; Yu-Hung Kuo; Stephanus Viljoen; Ramesh Grandhi; Berje H Shammassian; Anthony M DiGiorgio
+. 
+<i>Journal of neurosurgery. Spine</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1101/2023.08.02.551674" target="_blank">Improving rigor and reproducibility in western blot experiments with the blotRig analysis software.</a>
+</h4>
+<p>
+Cleopa Omondi; Austin Chou; Kenneth A Fond; Kazuhito Morioka; Nadine R Joseph; Jeffrey A Sacramento; Emma Iorio; Abel Torres-Espin; Hannah L Radabaugh; Jacob A Davis; Jason H Gumbel; J Russell Huie; Adam R Ferguson
+. 
+<i>bioRxiv : the preprint server for biology</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1038/s41598-024-70096-0" target="_blank">Improving rigor and reproducibility in western blot experiments with the blotRig analysis.</a>
+</h4>
+<p>
+Cleopa Omondi; Austin Chou; Kenneth A Fond; Kazuhito Morioka; Nadine R Joseph; Jeffrey A Sacramento; Emma Iorio; Abel Torres-Espin; Hannah L Radabaugh; Jacob A Davis; Jason H Gumbel; J Russell Huie; Adam R Ferguson
+. 
+<i>Scientific reports</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1136/tsaco-2024-001501" target="_blank">Prior traumatic brain injury is a risk factor for in-hospital mortality in moderate to severe traumatic brain injury: a TRACK-TBI cohort study.</a>
+</h4>
+<p>
+John K Yue; Leila L Etemad; Mahmoud M Elguindy; Thomas A van Essen; Patrick J Belton; Lindsay D Nelson; Michael A McCrea; Rick J G Vreeburg; Christine J Gotthardt; Joye X Tracey; Bukre C Coskun; Nishanth Krishnan; Cathra Halabi; Shawn R Eagle; Frederick K Korley; Claudia S Robertson; Ann-Christine Duhaime; Gabriela G Satris; Phiroz E Tarapore; Michael C Huang; Debbie Y Madhok; Joseph T Giacino; Pratik Mukherjee; Esther L Yuh; Alex B Valadka; Ava M Puccio; David O Okonkwo; Xiaoying Sun; Sonia Jain; Geoffrey T Manley; Anthony M DiGiorgio; Neeraj Badjatia; Jason Barber; Yelena G Bodien; Brian Fabian; Adam R Ferguson; Brandon Foreman; Raquel C Gardner; Shankar Gopinath; Ramesh Grandhi; J Russell Huie; C Dirk Keene; Hester F Lingsma; Christine L MacDonald; Amy J Markowitz; Randall Merchant; Laura B Ngwenya; Richard B Rodgers; Andrea L C Schneider; David M Schnyer; Sabrina R Taylor; Nancy R Temkin; Abel Torres-Espin; Mary J Vassar; Kevin K W Wang; Justin C Wong; Ross D Zafonte
+. 
+<i>Trauma surgery &amp;amp; acute care open</i>
 </p>
 <h4>
 <a href="https://doi.org/10.3171/2023.11.JNS231425" target="_blank">Performance of the IMPACT and CRASH prognostic models for traumatic brain injury in a contemporary multicenter cohort: a TRACK-TBI study.</a>
@@ -2569,12 +2691,28 @@ John K Yue; Young M Lee; Xiaoying Sun; Thomas A van Essen; Mahmoud M Elguindy; P
 <i>Journal of neurosurgery</i>
 </p>
 <h4>
-<a href="https://doi.org/10.3389/fneur.2021.768735" target="_blank">FAIR Data Reuse in Traumatic Brain Injury: Exploring Inflammation and Age as Moderators of Recovery in the TRACK-TBI Pilot.</a>
+<a href="https://doi.org/10.1089/neur.2024.0038" target="_blank">Effect-Size Discrepancies in Literature Versus Raw Datasets from Experimental Spinal Cord Injury Studies: A CLIMBER Meta-Analysis.</a>
 </h4>
 <p>
-J Russell Huie; Austin Chou; Abel Torres-Espin; Jessica L Nielson; Esther L Yuh; Raquel C Gardner; Ramon Diaz-Arrastia; Geoff T Manley; Adam R Ferguson
+Emma G Iorio; Alireza Khanteymoori; Kenneth A Fond; Anastasia V Keller; Lex Maliga Davis; Jan M Schwab; Adam R Ferguson; Abel Torres-Espin; Ralf Watzlawick
 . 
-<i>Frontiers in neurology</i>
+<i>Neurotrauma reports</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1016/j.artd.2024.101395" target="_blank">Predicting Recovery Following Total Hip and Knee Arthroplasty Using a Clustering Algorithm.</a>
+</h4>
+<p>
+Ryan T Halvorson; Abel Torres-Espin; Matthew Cherches; Matt Callahan; Thomas P Vail; Jeannie F Bailey
+. 
+<i>Arthroplasty today</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1089/neu.2024.0158" target="_blank">Evaluating and Updating the IMPACT Model to Predict Outcomes in Two Contemporary North American Traumatic Brain Injury Cohorts.</a>
+</h4>
+<p>
+Naoki Takegami; Abel Torres-Espin; Yoshihito Imagawa; Itsunori Watanabe; Susan Rowell; Martin Schreiber; Adam R Ferguson; H E Hinson
+. 
+<i>Journal of neurotrauma</i>
 </p>
 <h4>
 <a href="https://doi.org/10.3233/BMR-230067" target="_blank">Predictors of response in PROMIS-global in a chronic low back pain specialty clinic: STarTBack and chronic overlapping pain conditions.</a>
@@ -2585,12 +2723,28 @@ Patricia Zheng; Susan Ewing; Angelina Tang; Dennis Black; Trisha Hue; Jeffrey Lo
 <i>Journal of back and musculoskeletal rehabilitation</i>
 </p>
 <h4>
-<a href="https://doi.org/10.1002/jsp2.1301" target="_blank">Thresholding approaches for estimating paraspinal muscle fat infiltration using T1- and T2-weighted MRI: Comparative analysis using water-fat MRI.</a>
+<a href="https://doi.org/10.1162/99608f92.a9717b34" target="_blank">Harmonization-Information Trade-Offs for Sharing Individual Participant Data in Biomedicine.</a>
 </h4>
 <p>
-Jessica Ornowski; Lucas Dziesinski; Madeline Hess; Roland Krug; Maryse Fortin; Abel Torres-Espin; Sharmila Majumdar; Valentina Pedoia; Noah B Bonnheim; Jeannie F Bailey
+Abel Torres-Esp&#xed;n; Adam R Ferguson
 . 
-<i>JOR spine</i>
+<i>Harvard data science review</i>
+</p>
+<h4>
+<a href="https://doi.org/10.1002/ctm2.1650" target="_blank">ATF3 is a neuron-specific biomarker for spinal cord injury and ischaemic stroke.</a>
+</h4>
+<p>
+Jonathan Z Pan; Zhanqiang Wang; Wei Sun; Peipei Pan; Wei Li; Yongtao Sun; Shoulin Chen; Amity Lin; Wulin Tan; Liangliang He; Jacob Greene; Virginia Yao; Lijun An; Rich Liang; Qifeng Li; Jessica Yu; Lingyi Zhang; Nikolaos Kyritsis; Xuan Duong Fernandez; Sara Moncivais; Esmeralda Mendoza; Pamela Fung; Gongming Wang; Xinhuan Niu; Qihang Du; Zhaoyang Xiao; Yuwen Chang; Peiyuan Lv; J Russell Huie; Abel Torres-Espin; Adam R Ferguson; Debra D Hemmerle; Jason F Talbott; Philip R Weinstein; Lisa U Pascual; Vineeta Singh; Anthony M DiGiorgio; Rajiv Saigal; William D Whetstone; Geoffrey T Manley; Sanjay S Dhall; Jacqueline C Bresnahan; Mervyn Maze; Xiangning Jiang; Neel S Singhal; Michael S Beattie; Hua Su; Zhonghui Guan
+. 
+<i>Clinical and translational medicine</i>
+</p>
+<h4>
+<a href="https://doi.org/10.3389/fneur.2021.768735" target="_blank">FAIR Data Reuse in Traumatic Brain Injury: Exploring Inflammation and Age as Moderators of Recovery in the TRACK-TBI Pilot.</a>
+</h4>
+<p>
+J Russell Huie; Austin Chou; Abel Torres-Espin; Jessica L Nielson; Esther L Yuh; Raquel C Gardner; Ramon Diaz-Arrastia; Geoff T Manley; Adam R Ferguson
+. 
+<i>Frontiers in neurology</i>
 </p>
 <h2>2023</h2>
 <h4>
@@ -2616,14 +2770,6 @@ Austin Chou; Abel Torres-Espin; Nikos Kyritsis; J Russell Huie; Sarah Khatry; Je
 Austin Lui; Christine Park; Timothy Chryssikos; Hannah Radabaugh; Arati Patel; Alexander A Aabedi; Adam R Ferguson; Abel Torres Espin; Praveen V Mummaneni; Sanjay S Dhall; Xuan Duong-Fernandez; Rajiv Saigal; Austin Chou; Jonathan Pan; Vineeta Singh; Debra D Hemmerle; Nikos Kyritsis; Jason F Talbott; Lisa U Pascual; J Russell Huie; William D Whetstone; Jacqueline C Bresnahan; Michael S Beattie; Philip R Weinstein; Geoffrey T Manley; Anthony M DiGiorgio
 . 
 <i>Neurosurgical focus</i>
-</p>
-<h4>
-<a href="https://doi.org/10.1101/2023.08.02.551674" target="_blank">Improving rigor and reproducibility in western blot experiments with the blotRig analysis software.</a>
-</h4>
-<p>
-Cleopa Omondi; Austin Chou; Kenneth A Fond; Kazuhito Morioka; Nadine R Joseph; Jeffrey A Sacramento; Emma Iorio; Abel Torres-Espin; Hannah L Radabaugh; Jacob A Davis; Jason H Gumbel; J Russell Huie; Adam R Ferguson
-. 
-<i>bioRxiv : the preprint server for biology</i>
 </p>
 <h4>
 <a href="https://doi.org/10.1007/s00586-023-07572-0" target="_blank">Multi-domain biopsychosocial postoperative recovery trajectories associate with patient outcomes following lumbar fusion.</a>
@@ -2673,22 +2819,6 @@ Austin Chou; Abel Torres-Esp&#xed;n; J Russell Huie; Karen Krukowski; Sangmi Lee
 Aina Calls; Abel Torres-Espin; Marc Tormo; Laura Mart&#xed;nez-Escard&#xf3;; N&#xfa;ria Bonet; Ferran Casals; Xavier Navarro; V&#xed;ctor J Yuste; Esther Udina; Jordi Bruna
 . 
 <i>Annals of clinical and translational neurology</i>
-</p>
-<h4>
-<a href="https://doi.org/10.1162/99608f92.a9717b34" target="_blank">Harmonization-Information Trade-Offs for Sharing Individual Participant Data in Biomedicine.</a>
-</h4>
-<p>
-Abel Torres-Esp&#xed;n; Adam R Ferguson
-. 
-<i>Harvard data science review</i>
-</p>
-<h4>
-<a href="https://doi.org/10.1016/S1474-4422(22)00309-X" target="_blank">Traumatic brain injury: progress and challenges in prevention, clinical care, and research.</a>
-</h4>
-<p>
-Andrew I R Maas; David K Menon; Geoffrey T Manley; Mathew Abrams; Cecilia &#xc5;kerlund; Nada Andelic; Marcel Aries; Tom Bashford; Michael J Bell; Yelena G Bodien; Benjamin L Brett; Andr&#xe1;s B&#xfc;ki; Randall M Chesnut; Giuseppe Citerio; David Clark; Betony Clasby; D Jamie Cooper; Endre Czeiter; Marek Czosnyka; Kristen Dams-O'Connor; V&#xe9;ronique De Keyser; Ramon Diaz-Arrastia; Ari Ercole; Thomas A van Essen; &#xc9;anna Falvey; Adam R Ferguson; Anthony Figaji; Melinda Fitzgerald; Brandon Foreman; Dashiell Gantner; Guoyi Gao; Joseph Giacino; Benjamin Gravesteijn; Fabian Guiza; Deepak Gupta; Mark Gurnell; Juanita A Haagsma; Flora M Hammond; Gregory Hawryluk; Peter Hutchinson; Mathieu van der Jagt; Sonia Jain; Swati Jain; Ji-Yao Jiang; Hope Kent; Angelos Kolias; Erwin J O Kompanje; Fiona Lecky; Hester F Lingsma; Marc Maegele; Marek Majdan; Amy Markowitz; Michael McCrea; Geert Meyfroidt; Ana Mikoli&#x107;; Stefania Mondello; Pratik Mukherjee; David Nelson; Lindsay D Nelson; Virginia Newcombe; David Okonkwo; Matej Ore&#x161;i&#x10d;; Wilco Peul; Dana Pisic&#x103;; Suzanne Polinder; Jennie Ponsford; Louis Puybasset; Rahul Raj; Chiara Robba; Cecilie R&#xf8;e; Jonathan Rosand; Peter Schueler; David J Sharp; Peter Smielewski; Murray B Stein; Nicole von Steinb&#xfc;chel; William Stewart; Ewout W Steyerberg; Nino Stocchetti; Nancy Temkin; Olli Tenovuo; Alice Theadom; Ilias Thomas; Abel Torres Espin; Alexis F Turgeon; Andreas Unterberg; Dominique Van Praag; Ernest van Veen; Jan Verheyden; Thijs Vande Vyvere; Kevin K W Wang; Eveline J A Wiegers; W Huw Williams; Lindsay Wilson; Stephen R Wisniewski; Alexander Younsi; John K Yue; Esther L Yuh; Frederick A Zeiler; Marina Zeldovich; Roger Zemek
-. 
-<i>The Lancet. Neurology</i>
 </p>
 <h4>
 <a href="https://doi.org/10.1007/s12021-021-09512-z" target="_blank">Excavating FAIR Data: the Case of the Multicenter Animal Spinal Cord Injury Study (MASCIS), Blood Pressure, and Neuro-Recovery.</a>

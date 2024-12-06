@@ -7,14 +7,14 @@
     <description>Data DRIVEN Lab at University of Waterloo, By Abel Torres Espin
 </description>
     <generator>Distill</generator>
-    <lastBuildDate>2022-06-18</lastBuildDate>
+    <lastBuildDate>Sat, 18 Jun 2022 00:00:00 +0000</lastBuildDate>
     <item>
       <title>Co-author Network</title>
       <dc:creator>Abel Torres Espin</dc:creator>
       <link>https://atespin.github.io/posts/2022-06-18-collaboration-network</link>
       <description>Building a network of co-authors in R</description>
       <guid>https://atespin.github.io/posts/2022-06-18-collaboration-network</guid>
-      <pubDate>2022-06-18</pubDate>
+      <pubDate>Sat, 18 Jun 2022 00:00:00 +0000</pubDate>
       <media:content url="https://atespin.github.io/posts/2022-06-18-collaboration-network/collaboration-network_files/figure-html5/unnamed-chunk-7-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
     <item>
@@ -23,7 +23,7 @@
       <link>https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r</link>
       <description>A short description of the post.</description>
       <guid>https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r</guid>
-      <pubDate>2022-06-18</pubDate>
+      <pubDate>Sat, 18 Jun 2022 00:00:00 +0000</pubDate>
       <media:content url="https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r/reproducing-schotter-in-r_files/figure-html5/unnamed-chunk-3-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
     <item>
@@ -33,7 +33,7 @@
       <description>How I think experimental researchers are data scientist</description>
       <category>Data science</category>
       <guid>https://atespin.github.io/posts/2022-01-14-from-wet-lab-to-data-science</guid>
-      <pubDate>2022-01-14</pubDate>
+      <pubDate>Fri, 14 Jan 2022 00:00:00 +0000</pubDate>
     </item>
   </channel>
 </rss>

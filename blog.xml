@@ -7,24 +7,36 @@
     <description>Data DRIVEN Lab at University of Waterloo, By Abel Torres Espin
 </description>
     <generator>Distill</generator>
-    <lastBuildDate>Sat, 18 Jun 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 18 Feb 2025 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Who are you among all of us?</title>
+      <dc:creator>Abel Torres Espin</dc:creator>
+      <link>https://atespin.github.io/posts/2024-12-16-bipartite-network-of-authors-and-research-themes</link>
+      <description>A bipartite network of an author group and research topics</description>
+      <category>Networks</category>
+      <guid>https://atespin.github.io/posts/2024-12-16-bipartite-network-of-authors-and-research-themes</guid>
+      <pubDate>Tue, 18 Feb 2025 00:00:00 +0000</pubDate>
+      <media:content url="https://atespin.github.io/posts/2024-12-16-bipartite-network-of-authors-and-research-themes/bipartite-network_files/figure-html5/unnamed-chunk-15-1.png" medium="image" type="image/png" width="2880" height="2304"/>
+    </item>
     <item>
       <title>Co-author Network</title>
       <dc:creator>Abel Torres Espin</dc:creator>
       <link>https://atespin.github.io/posts/2022-06-18-collaboration-network</link>
       <description>Building a network of co-authors in R</description>
+      <category>Networks</category>
       <guid>https://atespin.github.io/posts/2022-06-18-collaboration-network</guid>
-      <pubDate>Sat, 18 Jun 2022 00:00:00 +0000</pubDate>
-      <media:content url="https://atespin.github.io/posts/2022-06-18-collaboration-network/collaboration-network_files/figure-html5/unnamed-chunk-7-1.png" medium="image" type="image/png" width="1248" height="768"/>
+      <pubDate>Sat, 18 Mar 2023 00:00:00 +0000</pubDate>
+      <media:content url="https://atespin.github.io/posts/2022-06-18-collaboration-network/collaboration-network_files/figure-html5/unnamed-chunk-10-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
     <item>
       <title>Reproducing Schotter in R</title>
       <dc:creator>Abel Torres Espin</dc:creator>
       <link>https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r</link>
-      <description>A short description of the post.</description>
+      <description>Recreating Schotter by Georg Nees in R</description>
+      <category>Creative coding</category>
       <guid>https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r</guid>
       <pubDate>Sat, 18 Jun 2022 00:00:00 +0000</pubDate>
-      <media:content url="https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r/reproducing-schotter-in-r_files/figure-html5/unnamed-chunk-3-1.png" medium="image" type="image/png" width="1248" height="768"/>
+      <media:content url="https://atespin.github.io/posts/2022-06-18-reproducing-schotter-in-r/reproducing-schotter-in-r_files/figure-html5/unnamed-chunk-13-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
     <item>
       <title>From wet lab to data science</title>

@@ -1,0 +1,26 @@
+---
+title: "Untitled"
+author: "Abel"
+date: "2023-08-12"
+output: html_document
+---
+
+<style>
+
+html{
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#particles-js{
+  width: 100%;
+  height: 100%;
+  background-color: #b61924;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+</style>
+
+<div id="particles-js"></div>
+<script src="particles.js"></script>
+<script src="app.js"></script>

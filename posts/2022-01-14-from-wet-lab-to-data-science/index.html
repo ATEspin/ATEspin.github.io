@@ -21,7 +21,7 @@
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -32,7 +32,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -2510,7 +2511,7 @@ d-appendix d-footnote-list a.footnote-backlink {
   color: var(--hover-color, white);
 }</style>
 <!--/radix_placeholder_distill-->
-  <script src="../../site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="../../site_libs/header-attrs-2.27/header-attrs.js"></script>
   <script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="../../site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="../../site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -2545,12 +2546,31 @@ d-appendix d-footnote-list a.footnote-backlink {
 </div>
 <div class="nav-right">
 <a href="../../index.html">Home</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Research and resources
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
 <a href="../../research.html">Research</a>
-<a href="../../about.html">People</a>
 <a href="../../publications.html">Publications</a>
-<a href="../../co-authors.html">Co-authors</a>
 <a href="../../Tools.html">Tools</a>
 <a href="../../preprintData.html">Pre-print and Data</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+People
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="../../about.html">Lab members</a>
+<a href="../../co-authors.html">Co-authors</a>
+</div>
+</div>
+<a href="../../blog.html">Blog</a>
 <a href="https://github.com/ATEspin">
 <i class="fab fa-github" aria-hidden="true"></i>
 </a>
@@ -2567,6 +2587,7 @@ d-appendix d-footnote-list a.footnote-backlink {
 
 <div class="d-title">
 <h1>From wet lab to data science</h1>
+
 <!--radix_placeholder_categories-->
 <div class="dt-tags">
   <a href="../../blog.html#category:Data_science" class="dt-tag">Data science</a>
@@ -2582,7 +2603,7 @@ d-appendix d-footnote-list a.footnote-backlink {
 </div>
 
 <div class="d-article">
-<p>Not while ago, I introduced myself as a data scientist, but it has not always been like that. Let me tell you how a biologist like me gets to that and how I believe any researcher can. I am a biomedical researcher and I spent the first 10 years of my career performing lab experiments, what is known as “wet lab”. At some point I realized that doing experiments was not that exciting anymore (a story for another day), but I was not ready to stop doing research, so I decided to shift focus to a more data-intensive work. For the last 3 years I have moved from a pure wet lab work to a pure dry or computational professional activity. During this time, I have learned a lot of new stuff, but I have also got to the conclusion that researchers have a good head start to transition to data science and related work. After all, data is the prima matter for contemporary research. Don’t make me wrong, is not an easy path, but if you are reading this because you are thinking about it, let me convince you that your research knowledge and skills are not that far from those needed to start a career in data science.</p>
+<p>Not while ago, I introduced myself as a data scientist, but it has not always been like that. Let me tell you how a biologist like me gets to that and how I believe any researcher can. I am a biomedical researcher and I spent the first 10 years of my career performing lab experiments, what is known as “wet lab”. At some point I realized that doing experiments was not that exciting anymore (a story for another day), but I was not ready to stop doing research, so I decided to shift focus to a more data-intensive work. For the last 3 years I have moved from a pure wet lab work to a pure dry or computational professional activity. During this time, I have learned a lot of new stuff, but I have also got to the conclusion that researchers have a good head start to transition to data science and related work. After all, data is the <em>prima matter</em> for contemporary research. Don’t make me wrong, is not an easy path, but if you are reading this because you are thinking about it, let me convince you that your research knowledge and skills are not that far from those needed to start a career in data science.</p>
 <p class="note">
 NOTE: If you are a computational researcher or your work is heavy on the quantitative site, you probably already made the connections I am making here and you probably already call yourself a data scientist. I have the perception that there is an increase in the number of researchers that has some working experience on computational methods, but yet are not fully aware of it.
 </p>
@@ -2593,7 +2614,8 @@ NOTE: If you are a computational researcher or your work is heavy on the quantit
 <p><strong>Data wrangling:</strong> This is a jargon to evoke any process related to joint, transform, re-organize, summarize and re-format datasets. While well formatted data for storage is important, almost every time you want to perform a specific analysis, you will have to make changes in the data structure. Most researchers probably know their way through spreadsheets or some stats software to bring the data to the required format for analysis.</p>
 <p><strong>Explore data:</strong> Meeting after meeting you show summary statistics and graphs to lab mattes, supervisors and collaborators. That is really it, you already know how to do this. Produce some summaries and visuals to start getting a sense of the data, check for potential errors and trends, etc.</p>
 <p><strong>Data analysis:</strong> If you have performed and analyzed research experiments, you probably navigated things like descriptive statistics, hypothesis testing, t-test, analysis of variance (ANOVA), p-values, parametric and non-parametric test, linear regression, correlation, normal distribution, to say a few. So you know more analysis and statistics that you might think. Although data analysis can be very complex and sophisticated in data science, researchers are very well equipped to do a lot of analytical task.</p>
-<p><strong>Get insights:</strong> Interpret your results. As a researcher, I believe this is one of your powers. Communication, data visualization and storytelling: If anyone things that researchers are these robots that communicate between them using dull technical reports full of numbers and lacking literary elements, will be very surprised at reading a scientific manuscript. Yes, these documents have more jargon and terminology than the average read, but nowadays manuscript and grant writing is an art of effective communication. How to say as much as possible, in the minimum space, for a broad audience (editors, reviewers and a broad reach of researchers), and at the same time captivate and avoid boresome. You know how to sell your insights. An although I think there is still a lot of space for improvement in scientific communication using viz, you know how to make pretty tables, plots, figures, posters and slide presentations.</p>
+<p><strong>Get insights:</strong> Interpret your results. As a researcher, I believe this is one of your powers.
+Communication, data visualization and storytelling: If anyone things that researchers are these robots that communicate between them using dull technical reports full of numbers and lacking literary elements, will be very surprised at reading a scientific manuscript. Yes, these documents have more jargon and terminology than the average read, but nowadays manuscript and grant writing is an art of effective communication. How to say as much as possible, in the minimum space, for a broad audience (editors, reviewers and a broad reach of researchers), and at the same time captivate and avoid boresome. You know how to sell your insights. An although I think there is still a lot of space for improvement in scientific communication using viz, you know how to make pretty tables, plots, figures, posters and slide presentations.</p>
 <p><strong>Learn new tools:</strong> there are a lot of tools in data science that researchers don’t know about. And the number keeps increasing at a scary paste. But so it is in research. Both researchers and data scientist are used to the need of keeping up with new methods and learning some of them in detail. Don’t let this scare you.</p>
 <p>As you can see, researchers and data scientist share more than what you might think at first glance. Sure you will have to learn a lot, and sure will get frustrating some times, but if research has taught me something is how to constantly learn and how to endure these frustrations and transform them into growth. If you are a researcher that have considered the idea of changing to a more data-centric role, I hope I have convinced you that you are not starting from nothing and I hope I can ease a bit the anxiety of confronting a change like this.</p>
 <p class="note">
